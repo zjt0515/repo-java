@@ -1,0 +1,9 @@
+flowchart LR
+  Client -- call --> Client_Stub --> Sockets1 --> Client_Stub
+  Client_Stub -- return --> Client
+
+  Server -- call --> Server_Stub --> Sockets2 --> Server_Stub
+  Server_Stub -- return --> Server
+
+  Sockets1 -- connection --> Sockets2
+

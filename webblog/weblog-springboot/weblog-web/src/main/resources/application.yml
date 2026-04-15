@@ -1,0 +1,15 @@
+jwt:
+  # 签发人
+  issuer: admin
+  # 秘钥
+  secret: 4q6gJbZnmHTK3QtDLMe6fOEdcunJ5scSKCSQl4kJkt36Ll08BGbOBOFMW8dBnki5pwVy8PCVYU6yn+QeK3rJ4Q==
+  # token 过期时间（单位：分钟） 24*60
+  tokenExpireTime: 1440
+  # token 请求头中的 key 值
+  tokenHeaderKey: Authorization
+  # token 请求头中的 value 值前缀
+  tokenPrefix: Bearer
+spring:
+  profiles:
+    # 激活指定profile
+    active: dev

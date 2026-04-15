@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd" >
+    <bean name="student" class="org.example.entity.Student" autowire="byType" init-method="init" destroy-method="destroy">
+        <!-- <constructor-arg name="teacher" ref="artTeacher"></constructor-arg> -->
+        <!-- <constructor-arg name="name" value="小明"></constructor-arg> -->
+        <property name="name" value="小明"></property>
+        <property name="teacher" ref="artTeacher"/>
+        <property name="list">
+            <list>
+                <value>1</value>
+                <value>2</value>
+                <value>3</value>
+            </list>
+        </property>
+    </bean>
+    <bean name="service" class="org.example.service.AService"></bean>
+    <bean name="artTeacher" class="org.example.entity.ArtStudent">
+        <property name="name" value="老师1"></property>
+    </bean>
+    <bean class="org.example.entity.SportStudent" parent="artTeacher"></bean>
+    <!-- 第二种工厂 -->
+    <bean name="woolFactory" class="org.example.entity.WoolFactory"></bean>
+    <bean factory-bean="woolFactory" factory-method="getWool"></bean>
+    <!-- 第三种工厂 -->
+    <bean name="stoneFactory" class="org.example.entity.StoneFactory"></bean>
+</beans>
