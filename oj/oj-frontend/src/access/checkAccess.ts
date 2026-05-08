@@ -1,4 +1,3 @@
-import { triggerEvent } from "element-plus/es/utils";
 import ACCESS_ENUM from "./accessEnum";
 
 /**

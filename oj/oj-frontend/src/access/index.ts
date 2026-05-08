@@ -6,16 +6,17 @@ import { ElMessage } from "element-plus";
 
 // 路由
 router.beforeEach(async (to, from) => {
-  console.log(useUserStore().loginUser);
+  console.log("当前用户" + useUserStore().loginUser);
   let loginUser = useUserStore().loginUser;
-  // (这里是尝试自动登录)如果未登录，尝试登录
+  // 未登录 -> 尝试自动登录
   if (!loginUser || !loginUser.userRole) {
     await useUserStore().getLoginUser();
     // 登录之后必须重新获取局部变量loginUser
     loginUser = useUserStore().loginUser;
   }
+
   const needAccess = to.meta?.access ?? ACCESS_ENUM.NOT_LOGIN;
-  console.log(needAccess, loginUser.userRole);
+  // console.log(needAccess, loginUser.userRole);
   if (needAccess !== ACCESS_ENUM.NOT_LOGIN) {
     // console.log(needAccess, loginUser.userRole);
     // (这里是需要手动登录)没登陆, 这里区别于上面是因为自动登录调用后肯定会加上userROle
@@ -30,12 +31,11 @@ router.beforeEach(async (to, from) => {
 
     if (!checkAccess(loginUser, needAccess as string)) {
       // 没有权限就跳转到无权限页面|提示无权限
-      alert("权限不足！");
+      ElMessage.error("权限不足")
       return false;
-    } else {
-      // 有权限直接进入
-      return;
-    }
+    } 
+    
+    return
   }
   return;
 });

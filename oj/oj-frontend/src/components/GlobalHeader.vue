@@ -18,8 +18,15 @@
       </el-col>
       <el-col :span="4">
         <div class="grid-content ep-bg-purple">
-          {{ userStore.loginUser?.userName ?? "未登录" }}
-
+          <!-- 登录了 -->
+          <template v-if="userStore.loginUser?.id !== '0' && userStore.loginUser.userName !== '未登录'">
+            {{ userStore.loginUser.userName }}
+          </template>
+          <!-- 未登录 -->
+          <template v-else>
+            <el-button type="primary" link @click="router.push('/user/login')">登录</el-button>
+            <el-button type="primary" link @click="router.push('/user/register')">注册</el-button>
+          </template>
         </div>
       </el-col>
     </el-row>
@@ -32,9 +39,10 @@ import { computed, ref } from 'vue';
 import { routes } from '../router/routes';
 import { useRouter } from 'vue-router';
 import checkAccess from '../access/checkAccess'
-import ACCESS_ENUM from '../access/accessEnum';
+import ACCESS_ENUM from '@/access/accessEnum';
 
 const router = useRouter()
+
 // 监听路由变化，响应式渲染聚焦路由
 const activeIndex = ref('/')
 router.afterEach(to => {
@@ -43,14 +51,16 @@ router.afterEach(to => {
 const userStore = useUserStore()
 
 userStore.getLoginUser()
+
 // 3s后登录
-// setTimeout(() => {
-//   userStore.updateUser({
-//     userName: "管理员",
-//     id: "Aelx",
-//     userRole: ACCESS_ENUM.ADMIN
-//   })
-// }, 3000)
+setTimeout(() => {
+  userStore.updateUser({
+    userName: "管理员",
+    id: "Aelx",
+    userRole: ACCESS_ENUM.ADMIN
+  })
+}, 3000)
+
 // 使用计算属性，根据权限变化响应式渲染路由显示
 const accessRoutes = computed(() => {
   // 根据权限过滤路由数组

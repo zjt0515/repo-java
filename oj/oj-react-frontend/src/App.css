@@ -1,0 +1,11 @@
+#root {
+  min-height: 100svh;
+}
+
+::selection {
+  background: color-mix(in oklch, var(--primary) 18%, transparent);
+}
+
+pre {
+  tab-size: 2;
+}

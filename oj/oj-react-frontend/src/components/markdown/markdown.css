@@ -1,0 +1,131 @@
+.oj-markdown-surface {
+  --color-accent-fg: var(--primary);
+  --color-border-default: var(--border);
+  --color-canvas-default: transparent;
+  --color-canvas-subtle: var(--muted);
+  --color-danger-fg: var(--destructive);
+  --color-fg-default: var(--foreground);
+  --color-fg-muted: var(--muted-foreground);
+  --color-neutral-muted: color-mix(in oklab, var(--muted) 70%, transparent);
+}
+
+.oj-markdown-editor .w-md-editor {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--background);
+  box-shadow: none;
+}
+
+.oj-markdown-editor .w-md-editor-toolbar {
+  border-bottom: 1px solid var(--border);
+  background: var(--muted);
+}
+
+.oj-markdown-editor .w-md-editor-toolbar li > button {
+  color: var(--muted-foreground);
+}
+
+.oj-markdown-editor .w-md-editor-toolbar li > button:hover,
+.oj-markdown-editor .w-md-editor-toolbar li > button:focus {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.oj-markdown-editor .w-md-editor-content,
+.oj-markdown-editor .w-md-editor-input,
+.oj-markdown-editor .w-md-editor-preview {
+  background: var(--background);
+}
+
+.oj-markdown-editor .w-md-editor-text-pre,
+.oj-markdown-editor .w-md-editor-text-input,
+.oj-markdown-editor .w-md-editor-text > .w-md-editor-text-pre {
+  font-family: var(--font-sans);
+  font-size: 0.875rem !important;
+  line-height: 1.65 !important;
+}
+
+.oj-markdown-editor .w-md-editor-text-input {
+  color: var(--foreground);
+  -webkit-text-fill-color: var(--foreground);
+}
+
+.oj-markdown-editor .w-md-editor-text-input::placeholder {
+  color: var(--muted-foreground);
+  -webkit-text-fill-color: var(--muted-foreground);
+}
+
+.oj-markdown-editor .w-md-editor-preview {
+  box-shadow: inset 1px 0 0 var(--border);
+}
+
+.oj-markdown-body.wmde-markdown {
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+.oj-markdown-viewer .oj-markdown-body.wmde-markdown {
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.oj-markdown-body.wmde-markdown h1,
+.oj-markdown-body.wmde-markdown h2,
+.oj-markdown-body.wmde-markdown h3,
+.oj-markdown-body.wmde-markdown h4,
+.oj-markdown-body.wmde-markdown h5,
+.oj-markdown-body.wmde-markdown h6 {
+  color: var(--foreground);
+}
+
+.oj-markdown-body.wmde-markdown a {
+  color: var(--primary);
+}
+
+.oj-markdown-body.wmde-markdown blockquote {
+  color: var(--muted-foreground);
+  border-left-color: var(--border);
+}
+
+.oj-markdown-body.wmde-markdown code {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.oj-markdown-body.wmde-markdown pre {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--muted);
+}
+
+.oj-markdown-body.wmde-markdown pre code {
+  border: 0;
+  background: transparent;
+}
+
+.oj-markdown-body.wmde-markdown table {
+  display: block;
+  overflow-x: auto;
+}
+
+.oj-markdown-body.wmde-markdown table tr {
+  border-top-color: var(--border);
+}
+
+.oj-markdown-body.wmde-markdown table tr:nth-child(2n) {
+  background: var(--muted);
+}
+
+.oj-markdown-body.wmde-markdown table th,
+.oj-markdown-body.wmde-markdown table td {
+  border-color: var(--border);
+}
+
+.oj-markdown-body.wmde-markdown img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+}

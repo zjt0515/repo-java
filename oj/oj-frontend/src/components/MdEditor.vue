@@ -6,7 +6,6 @@
 import gfm from '@bytemd/plugin-gfm'
 import highlight from '@bytemd/plugin-highlight'
 import { Editor } from '@bytemd/vue-next'
-import 'bytemd/dist/index.css'
 import { ref } from 'vue';
 const plugins = [
   gfm(),

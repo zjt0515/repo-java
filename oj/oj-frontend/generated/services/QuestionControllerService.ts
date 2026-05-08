@@ -29,7 +29,7 @@ export class QuestionControllerService {
     ): CancelablePromise<BaseResponse_long_ | any> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/question/add',
+            url: '/api/question/add ',
             body: questionAddRequest,
             errors: {
                 401: `Unauthorized`,

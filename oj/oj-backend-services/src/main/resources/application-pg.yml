@@ -1,0 +1,15 @@
+# PostgreSQL 配置文件
+# 使用方式：spring.profiles.active=pg
+#spring:
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://ep-empty-mouse-a12mvnh3-pooler.ap-southeast-1.aws.neon.tech/neondb
+#    username: neondb_owner
+#    password: npg_FIYEDbVC23LA
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://db.kwujtmwsrznxxvedsnnk.supabase.co:5432/postgres
+    url: jdbc:postgresql://db.kwujtmwsrznxxvedsnnk.supabase.co:5432/postgres
+    username: postgres
+    password: 9,GQ#NA5K.g##3n
