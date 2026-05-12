@@ -145,6 +145,8 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
                 ExecuteMessage executeMessage = ProcessUtils.runProcessWithSin(runProcess, "运行", inputArgs);
                 System.out.println(executeMessage);
                 executeMessageList.add(executeMessage);
+
+                timeoutThread.interrupt();
             } catch (Exception e) {
                 throw new RuntimeException("执行错误", e);
             }

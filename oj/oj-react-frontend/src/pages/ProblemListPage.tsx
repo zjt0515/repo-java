@@ -19,6 +19,11 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination'
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import {
   Table,
   TableBody,
   TableCell,
@@ -29,6 +34,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   formatAcceptRate,
+  getAcceptRate,
   parseQuestionTagInput,
   parseQuestionTags,
 } from '@/lib/question-utils'
@@ -37,6 +43,7 @@ import {
   listQuestionVOs,
   type QuestionVO,
 } from '@/services/questionService'
+import { Progress } from '@/components/ui/progress'
 
 const PAGE_SIZE = 12
 
@@ -142,68 +149,67 @@ function ProblemListPage() {
             </Button>
           </form>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>题目</TableHead>
-                <TableHead className="hidden md:table-cell">标签</TableHead>
-                <TableHead className="hidden text-right sm:table-cell">提交</TableHead>
-                <TableHead className="hidden text-right sm:table-cell">通过率</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <ProblemListSkeleton />
-              ) : records.length > 0 ? (
-                records.map((question) => (
-                  <TableRow key={question.id}>
-                    <TableCell>
-                      <div className="max-w-2xl">
-                        {question.id ? (
-                          <Link
-                            className="group block min-w-0"
-                            params={{ questionId: String(question.id) }}
-                            to="/problems/$questionId"
-                          >
-                            <div className="truncate font-medium transition-colors group-hover:text-primary">
-                              {question.title || '未命名题目'}
-                            </div>
-                            <div className="mt-1 truncate text-xs text-muted-foreground">
-                              {question.content || '暂无题目描述'}
-                            </div>
-                          </Link>
-                        ) : (
-                          <>
-                            <div className="truncate font-medium">
-                              {question.title || '未命名题目'}
-                            </div>
-                            <div className="mt-1 truncate text-xs text-muted-foreground">
-                              {question.content || '暂无题目描述'}
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <ProblemTagList value={question.tags} />
-                    </TableCell>
-                    <TableCell className="hidden text-right sm:table-cell">
-                      {question.submitNum ?? 0}
-                    </TableCell>
-                    <TableCell className="hidden text-right sm:table-cell">
-                      {formatAcceptRate(question.acceptedNum, question.submitNum)}
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
+          <div className="px-3">
+            <Table className="table-fixed">
+              <TableHeader>
                 <TableRow>
-                  <TableCell className="h-40 text-center text-sm text-muted-foreground" colSpan={4}>
-                    暂无题目
-                  </TableCell>
+                  <TableHead className="w-full sm:w-[58%] md:w-[46%]">题目</TableHead>
+                  <TableHead className="hidden md:table-cell md:w-[34%]">标签</TableHead>
+                  <TableHead className="hidden sm:table-cell sm:w-48 md:w-56">
+                    通过率
+                  </TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <ProblemListSkeleton />
+                ) : (
+                  records.map((question) => (
+                    <TableRow key={question.id}>
+                      <TableCell className="w-full sm:w-[58%] md:w-[46%]">
+                        <div className="min-w-0">
+                          {question.id ? (
+                            <Link
+                              className="group block min-w-0"
+                              params={{ questionId: String(question.id) }}
+                              to="/problems/$questionId"
+                            >
+                              <div className="truncate font-medium transition-colors group-hover:text-primary">
+                                {question.title || '未命名题目'}
+                              </div>
+                              <div className="mt-1 truncate text-xs text-muted-foreground">
+                                {question.content || '暂无题目描述'}
+                              </div>
+                            </Link>
+                          ) : (
+                            <>
+                              <div className="truncate font-medium">
+                                {question.title || '未命名题目'}
+                              </div>
+                              <div className="mt-1 truncate text-xs text-muted-foreground">
+                                {question.content || '暂无题目描述'}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                      {/* 题目标签 */}
+                      <TableCell className="hidden md:table-cell md:w-[34%]">
+                        <ProblemTagList value={question.tags} />
+                      </TableCell>
+                      {/* 题目通过 */}
+                      <TableCell className="hidden sm:table-cell sm:w-48 md:w-56">
+                        <ProblemAcceptRate
+                          acceptedNum={question.acceptedNum}
+                          submitNum={question.submitNum}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
 
           <div className="flex flex-col gap-3 border-t p-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">
@@ -247,27 +253,75 @@ function ProblemListPage() {
 function ProblemListSkeleton() {
   return Array.from({ length: 6 }, (_, index) => (
     <TableRow key={index}>
-      <TableCell>
-        <div className="max-w-2xl space-y-2">
+      <TableCell className="w-full sm:w-[58%] md:w-[46%]">
+        <div className="min-w-0 space-y-2">
           <Skeleton className="h-4 w-48 max-w-full" />
           <Skeleton className="h-3 w-80 max-w-full" />
         </div>
       </TableCell>
-      <TableCell className="hidden md:table-cell">
+      <TableCell className="hidden md:table-cell md:w-[34%]">
         <div className="flex gap-1.5">
           <Skeleton className="h-5 w-14 rounded-full" />
           <Skeleton className="h-5 w-20 rounded-full" />
           <Skeleton className="h-5 w-12 rounded-full" />
         </div>
       </TableCell>
-      <TableCell className="hidden sm:table-cell">
-        <Skeleton className="ml-auto h-4 w-12" />
-      </TableCell>
-      <TableCell className="hidden sm:table-cell">
-        <Skeleton className="ml-auto h-4 w-14" />
+      <TableCell className="hidden sm:table-cell sm:w-48 md:w-56">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-1.5 min-w-24 flex-1 rounded-full" />
+          <Skeleton className="h-3 w-10" />
+        </div>
       </TableCell>
     </TableRow>
   ))
+}
+
+function ProblemAcceptRate({
+  acceptedNum,
+  submitNum,
+}: {
+  acceptedNum?: number
+  submitNum?: number
+}) {
+  const [open, setOpen] = useState(false)
+  const acceptRate = getAcceptRate(acceptedNum, submitNum)
+
+  return (
+    <div className="flex items-center gap-3">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            aria-label="查看提交和通过数量"
+            className="min-w-24 flex-1 cursor-default py-2"
+            onBlur={() => setOpen(false)}
+            onFocus={() => setOpen(true)}
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+            type="button"
+          >
+            <Progress className="h-1.5" value={acceptRate} />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="center" className="w-40 gap-2 p-3" side="top">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-muted-foreground">提交数</span>
+            <span className="font-medium">{formatProblemCount(submitNum)}</span>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-muted-foreground">通过数</span>
+            <span className="font-medium">{formatProblemCount(acceptedNum)}</span>
+          </div>
+        </PopoverContent>
+      </Popover>
+      <span className="w-10 text-right text-xs text-muted-foreground">
+        {formatAcceptRate(acceptedNum, submitNum)}
+      </span>
+    </div>
+  )
+}
+
+function formatProblemCount(value?: number) {
+  return (value ?? 0).toLocaleString('zh-CN')
 }
 
 function ProblemTagList({ value }: { value?: string | string[] }) {
@@ -278,7 +332,7 @@ function ProblemTagList({ value }: { value?: string | string[] }) {
   }
 
   return (
-    <div className="flex max-w-xs flex-wrap gap-1">
+    <div className="flex max-w-full flex-wrap gap-1">
       {tags.slice(0, 3).map((tag) => (
         <Badge className="rounded-md" key={tag} variant="secondary">
           {tag}
