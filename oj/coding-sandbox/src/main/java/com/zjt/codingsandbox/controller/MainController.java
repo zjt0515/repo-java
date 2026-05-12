@@ -5,9 +5,11 @@ import cn.hutool.core.util.StrUtil;
 import com.zjt.codingsandbox.sandbox.java.*;
 import com.zjt.codingsandbox.model.ExecuteCodeRequest;
 import com.zjt.codingsandbox.model.ExecuteCodeResponse;
+import com.zjt.codingsandbox.sandbox.node.NodeCodeSandbox;
 import com.zjt.codingsandbox.sandbox.node.NodeCodeSandboxDocker;
 import com.zjt.codingsandbox.sandbox.node.NodeCodeSandboxTemplate;
 import com.zjt.codingsandbox.utils.ResponseUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,11 +35,15 @@ public class MainController {
     private  JavaCodeSandboxDocker javaCodeSandboxDocker;
 
     @Resource
-    private NodeCodeSandboxTemplate nodeCodeSandboxTemplate;
+    private NodeCodeSandbox nodeCodeSandbox;
+
+    @Resource
+    private NodeCodeSandboxDocker nodeCodeSandboxDocker;
 
     public static final String AUTH_HEADER = "auth";
 
     public static final String AUTH_HEADER_SECRET = "ExampleSecretKey";
+
 
     @PostMapping("/executeCode")
     public ExecuteCodeResponse executeCode(@RequestBody ExecuteCodeRequest executeCodeRequest, HttpServletRequest request,
@@ -67,7 +73,8 @@ public class MainController {
             //return javaCodeSandbox.executeCode(executeCodeRequest);
             //return  dockerCodeSandbox.executeCode(executeCodeRequest);
         } else if ("javascript".equals(language) || "js".equals(language)) {
-            return nodeCodeSandboxTemplate.executeCode(executeCodeRequest);
+            //return nodeCodeSandbox.executeCode(executeCodeRequest);
+            return nodeCodeSandboxDocker.executeCode(executeCodeRequest);
         }
         return null;
     }

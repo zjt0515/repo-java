@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zjt.ojquestionservice.mapper.QuestionSubmitMapper">
+
+    <resultMap id="QuestionSubmitMap" type="com.zjt.ojmodel.model.entity.QuestionSubmit">
+        <id property="id" column="id"/>
+        <result property="questionId" column="question_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="code" column="code"/>
+        <result property="language" column="language"/>
+        <result property="status" column="status"/>
+        <result property="judgeInfo" column="judge_info"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+
+    <resultMap id="QuestionSubmitRawVOMap" type="com.zjt.ojmodel.model.vo.QuestionSubmitRawVO">
+        <id property="id" column="submit_id"/>
+        <result property="questionId" column="submit_question_id"/>
+        <result property="userId" column="submit_user_id"/>
+        <result property="code" column="submit_code"/>
+        <result property="language" column="submit_language"/>
+        <result property="status" column="submit_status"/>
+        <result property="judgeInfo" column="submit_judge_info"/>
+        <result property="createTime" column="submit_create_time"/>
+        <association property="questionVO" javaType="com.zjt.ojmodel.model.vo.QuestionVO">
+            <id property="id" column="question_id"/>
+            <result property="title" column="question_title"/>
+            <result property="content" column="question_content"/>
+            <result property="submitNum" column="question_submit_num"/>
+            <result property="acceptedNum" column="question_accepted_num"/>
+            <result property="thumbNum" column="question_thumb_num"/>
+            <result property="favourNum" column="question_favour_num"/>
+            <result property="userId" column="question_user_id"/>
+            <result property="createTime" column="question_create_time"/>
+            <result property="updateTime" column="question_update_time"/>
+        </association>
+    </resultMap>
+
+    <select id="selectSubmitPage" resultMap="QuestionSubmitMap">
+        SELECT
+            qs.id,
+            qs.question_id,
+            qs.user_id,
+            qs.code,
+            qs.language,
+            qs.status,
+            qs.judge_info,
+            qs.create_time,
+            qs.update_time,
+            qs.is_delete
+        FROM question_submit qs
+        WHERE qs.is_delete = 0
+        <if test="request != null and request.userId != null">
+            AND qs.user_id = #{request.userId}
+        </if>
+        <if test="request != null and request.questionId != null">
+            AND qs.question_id = #{request.questionId}
+        </if>
+        <if test="request != null and request.language != null and request.language != ''">
+            AND qs.language = #{request.language}
+        </if>
+        <if test="request != null and request.status != null">
+            AND qs.status = #{request.status}
+        </if>
+        ORDER BY qs.create_time DESC
+    </select>
+
+    <select id="selectSubmitRawVOPage" resultMap="QuestionSubmitRawVOMap">
+        SELECT
+            qs.id AS submit_id,
+            qs.question_id AS submit_question_id,
+            qs.user_id AS submit_user_id,
+            qs.code AS submit_code,
+            qs.language AS submit_language,
+            qs.status AS submit_status,
+            qs.judge_info AS submit_judge_info,
+            qs.create_time AS submit_create_time,
+            q.id AS question_id,
+            q.title AS question_title,
+            q.content AS question_content,
+            q.submit_num AS question_submit_num,
+            q.accepted_num AS question_accepted_num,
+            q.thumb_num AS question_thumb_num,
+            q.favour_num AS question_favour_num,
+            q.user_id AS question_user_id,
+            q.create_time AS question_create_time,
+            q.update_time AS question_update_time
+        FROM question_submit qs
+        LEFT JOIN question q ON qs.question_id = q.id AND q.is_delete = 0
+        WHERE qs.is_delete = 0
+        <if test="request != null and request.userId != null">
+            AND qs.user_id = #{request.userId}
+        </if>
+        <if test="request != null and request.questionId != null">
+            AND qs.question_id = #{request.questionId}
+        </if>
+        <if test="request != null and request.language != null and request.language != ''">
+            AND qs.language = #{request.language}
+        </if>
+        <if test="request != null and request.status != null">
+            AND qs.status = #{request.status}
+        </if>
+        ORDER BY qs.create_time DESC
+    </select>
+
+</mapper>

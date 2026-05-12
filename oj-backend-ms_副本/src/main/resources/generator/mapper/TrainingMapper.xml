@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="generator.mapper.TrainingMapper">
+
+    <resultMap id="BaseResultMap" type="generator.domain.Training">
+            <id property="id" column="id" />
+            <result property="title" column="title" />
+            <result property="description" column="description" />
+            <result property="tags" column="tags" />
+            <result property="questions" column="questions" />
+            <result property="questionNum" column="question_num" />
+            <result property="sortOrder" column="sort_order" />
+            <result property="userId" column="user_id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,title,description,tags,questions,question_num,
+        sort_order,user_id,create_time,update_time,is_delete
+    </sql>
+</mapper>

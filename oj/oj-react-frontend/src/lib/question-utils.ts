@@ -44,6 +44,14 @@ export function formatQuestionDateTime(value?: string) {
   })
 }
 
+export function getAcceptRate(acceptedNum?: number, submitNum?: number) {
+  if (!submitNum) {
+    return 0
+  }
+
+  return ((acceptedNum ?? 0) / submitNum) * 100
+}
+
 export function formatAcceptRate(acceptedNum?: number, submitNum?: number) {
   if (!submitNum) {
     return '-'

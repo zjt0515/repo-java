@@ -1,67 +1,89 @@
 package com.zjt.codingsandbox.sandbox.node;
 
-import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.io.resource.ResourceUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.*;
 import com.github.dockerjava.api.model.*;
-import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
+import com.github.dockerjava.core.DockerClientConfig;
+import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
+import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
+import com.github.dockerjava.transport.DockerHttpClient;
 import com.zjt.codingsandbox.model.ExecuteCodeRequest;
 import com.zjt.codingsandbox.model.ExecuteCodeResponse;
 import com.zjt.codingsandbox.model.ExecuteMessage;
+import com.zjt.codingsandbox.sandbox.java.JavaCodeSandboxDocker;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Slf4j
 public class NodeCodeSandboxDocker extends NodeCodeSandboxTemplate {
-
-    private static final String APP_FILE_PATH = "/app/Main.js";
 
     private static final long TIME_OUT = 5000L;
 
-    private static final Boolean FIRST_INIT = true;
+    private static  Boolean FIRST_INIT = true;
+
+    private static  final String IMAGE = "node:22-bookworm-slim";
 
     public static void main(String[] args) {
-        NodeCodeSandboxDocker javaNativeCodeSandbox = new NodeCodeSandboxDocker();
+        JavaCodeSandboxDocker javaNativeCodeSandbox = new JavaCodeSandboxDocker();
         ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
         executeCodeRequest.setInputList(Arrays.asList("1 2", "1 3"));
-        String code = "const sum = process.argv.slice(2).reduce((acc, cur) => acc + Number(cur), 0);\n"
-                + "console.log(sum);";
+        String code = ResourceUtil.readStr("testCode/simpleComputeArgs/Main.java", StandardCharsets.UTF_8);
+//        String code = ResourceUtil.readStr("testCode/unsafeCode/RunFileError.java", StandardCharsets.UTF_8);
+//        String code = ResourceUtil.readStr("testCode/simpleCompute/Main.java", StandardCharsets.UTF_8);
         executeCodeRequest.setCode(code);
-        executeCodeRequest.setLanguage("javascript");
+        executeCodeRequest.setLanguage("java");
         ExecuteCodeResponse executeCodeResponse = javaNativeCodeSandbox.executeCode(executeCodeRequest);
         System.out.println(executeCodeResponse);
     }
 
     /**
      * 3、创建容器，把文件复制到容器内
-     * @param userCodeFile
+     * @param codeFile
      * @param inputList
      * @return
      */
     @Override
-    public List<ExecuteMessage> runFile(File userCodeFile, List<String> inputList) {
-        if (inputList == null || inputList.isEmpty()) {
-            inputList = new ArrayList<>();
-            inputList.add("");
-        }
-        String userCodeParentPath = userCodeFile.getParentFile().getAbsolutePath();
-        // 获取默认的 Docker Client
-        DockerClient dockerClient = DockerClientBuilder.getInstance().build();
+    public List<ExecuteMessage> runCode(File codeFile, List<String> inputList)  {
+        String userCodeParentPath = codeFile.getParentFile().getAbsolutePath();
 
+        DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+                //.withDockerHost("tcp://localhost:2376")
+                .withDockerTlsVerify(false)
+                //.withDockerCertPath("/home/zz/.docker")
+                //.withRegistryUsername(registryUser)
+                //.withRegistryPassword(registryPass)
+                //.withRegistryEmail(registryMail)
+                //.withRegistryUrl(registryUrl)
+                .build();
+
+        // 构建DockerHttpClient
+        DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
+                .dockerHost(config.getDockerHost())
+                .sslConfig(config.getSSLConfig())
+                .maxConnections(100)
+                .connectionTimeout(Duration.ofSeconds(30))
+                .responseTimeout(Duration.ofSeconds(45))
+                .build();
+
+        // 构建DockerClient
+        DockerClient dockerClient = DockerClientImpl.getInstance(config, httpClient);
         // 拉取镜像
-        String image = "node:18-alpine";
         if (FIRST_INIT) {
-            PullImageCmd pullImageCmd = dockerClient.pullImageCmd(image);
+            PullImageCmd pullImageCmd = dockerClient.pullImageCmd(IMAGE);
             PullImageResultCallback pullImageResultCallback = new PullImageResultCallback() {
                 @Override
                 public void onNext(PullResponseItem item) {
@@ -77,18 +99,16 @@ public class NodeCodeSandboxDocker extends NodeCodeSandboxTemplate {
                 System.out.println("拉取镜像异常");
                 throw new RuntimeException(e);
             }
+            FIRST_INIT = false;
         }
 
-        System.out.println("下载完成");
-
         // 创建容器
-
-        CreateContainerCmd containerCmd = dockerClient.createContainerCmd(image);
+        CreateContainerCmd containerCmd = dockerClient.createContainerCmd(IMAGE);
         HostConfig hostConfig = new HostConfig();
         hostConfig.withMemory(100 * 1000 * 1000L);
         hostConfig.withMemorySwap(0L);
         hostConfig.withCpuCount(1L);
-        hostConfig.withSecurityOpts(Arrays.asList("seccomp=安全管理配置字符串"));
+        //hostConfig.withSecurityOpts(Arrays.asList("seccomp=安全管理配置字符串"));
         hostConfig.setBinds(new Bind(userCodeParentPath, new Volume("/app")));
         CreateContainerResponse createContainerResponse = containerCmd
                 .withHostConfig(hostConfig)
@@ -100,27 +120,28 @@ public class NodeCodeSandboxDocker extends NodeCodeSandboxTemplate {
                 .withTty(false)
                 .withCmd("sh", "-c", "while true; do sleep 1000; done")
                 .exec();
+
         System.out.println(createContainerResponse);
         String containerId = createContainerResponse.getId();
 
         // 启动容器
         dockerClient.startContainerCmd(containerId).exec();
 
-        // docker exec keen_blackwell node /app/Main.js 1 3
+        // docker exec keen_blackwell node /app/Main.js < /app/1.txt
         // 执行命令并获取结果
         List<ExecuteMessage> executeMessageList = new ArrayList<>();
-        for (String inputArgs : inputList) {
-            StopWatch stopWatch = new StopWatch();
-            String[] inputArgsArray = inputArgs == null || inputArgs.trim().isEmpty()
-                    ? new String[0]
-                    : inputArgs.trim().split("\\s+");
-            String[] cmdArray = ArrayUtil.append(new String[]{"node", APP_FILE_PATH}, inputArgsArray);
+        for (int i = 0; i < inputList.size(); i++) {
+            //String[] cmdArray1 = ArrayUtil.append(new String[]{"java", "-cp", "/app", "Main"}, inputArgsArray);
+            String[] cmdArray = {"sh", "-c", "node /app/Main.js < /app/" + i + ".txt"};
+
             ExecCreateCmdResponse execCreateCmdResponse = dockerClient.execCreateCmd(containerId)
                     .withCmd(cmdArray)
-                    .withAttachStderr(true)
                     .withAttachStdin(true)
                     .withAttachStdout(true)
+                    .withAttachStderr(true)
+                    .withTty(false)
                     .exec();
+
             System.out.println("创建执行命令：" + execCreateCmdResponse);
 
             ExecuteMessage executeMessage = new ExecuteMessage();
@@ -130,6 +151,11 @@ public class NodeCodeSandboxDocker extends NodeCodeSandboxTemplate {
             // 判断是否超时
             final boolean[] timeout = {true};
             String execId = execCreateCmdResponse.getId();
+
+            // Callback
+            StringBuilder messageBuilder = new StringBuilder();
+            StringBuilder errorMessageBuilder = new StringBuilder();
+            //ResultCallback.Adapter<Frame> callback = new ResultCallback.Adapter<>();
             ExecStartResultCallback execStartResultCallback = new ExecStartResultCallback() {
                 @Override
                 public void onComplete() {
@@ -145,8 +171,11 @@ public class NodeCodeSandboxDocker extends NodeCodeSandboxTemplate {
                         errorMessage[0] = new String(frame.getPayload());
                         System.out.println("输出错误结果：" + errorMessage[0]);
                     } else {
-                        message[0] = new String(frame.getPayload());
-                        System.out.println("输出结果：" + message[0]);
+                        String successMessage = new String(frame.getPayload());
+                        messageBuilder.append(successMessage);
+
+                        log.info("exec Result: {}", successMessage);
+                        message[0] = successMessage;
                     }
                     super.onNext(frame);
                 }
@@ -160,8 +189,9 @@ public class NodeCodeSandboxDocker extends NodeCodeSandboxTemplate {
 
                 @Override
                 public void onNext(Statistics statistics) {
-                    System.out.println("内存占用：" + statistics.getMemoryStats().getUsage());
-                    maxMemory[0] = Math.max(statistics.getMemoryStats().getUsage(), maxMemory[0]);
+                    Long memory = statistics.getMemoryStats().getUsage();
+                    System.out.println("内存占用：" + memory);
+                    maxMemory[0] = Math.max(memory, maxMemory[0]);
                 }
 
                 @Override
@@ -185,25 +215,53 @@ public class NodeCodeSandboxDocker extends NodeCodeSandboxTemplate {
                 }
             });
             statsCmd.exec(statisticsResultCallback);
+
+            StopWatch stopWatch = new StopWatch();
+
+            // StartCmd
             try {
-                stopWatch.start();
                 dockerClient.execStartCmd(execId)
-                        .exec(execStartResultCallback)
-                        .awaitCompletion(TIME_OUT, TimeUnit.MILLISECONDS);
-                stopWatch.stop();
-                time = stopWatch.getLastTaskTimeMillis();
-                statsCmd.close();
+                        .exec(execStartResultCallback);
+
+                stopWatch.start();
+                boolean b = execStartResultCallback.awaitCompletion(TIME_OUT, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 System.out.println("程序执行异常");
                 throw new RuntimeException(e);
+            } finally {
+                stopWatch.stop();
+                time = stopWatch.getLastTaskTimeMillis();
+                statsCmd.close();
             }
-            executeMessage.setMessage(message[0]);
+            String msg = messageBuilder.toString();
+            if (msg.endsWith("\r\n")) {
+                msg  = msg.substring(0, msg.length() - 2);
+            } else if (msg.endsWith("\n")) {
+                msg = msg.substring(0, msg.length() - 1);
+            }
+            executeMessage.setMessage(msg);
             executeMessage.setErrMessage(errorMessage[0]);
             executeMessage.setTime(time);
             executeMessage.setMemory(maxMemory[0]);
             executeMessageList.add(executeMessage);
         }
+
+        deleteContainer(dockerClient, containerId);
+
         return executeMessageList;
     }
+    /**
+     * 清理容器
+     *
+     * @param dockerClient
+     * @param containerId
+     */
+    private void deleteContainer(DockerClient dockerClient, String containerId){
+        // 清理容器
+        dockerClient.stopContainerCmd(containerId).exec();
+        dockerClient.removeContainerCmd(containerId).exec();
+    }
 }
+
+
 
