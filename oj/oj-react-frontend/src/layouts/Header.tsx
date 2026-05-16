@@ -17,9 +17,9 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: '首页', to: '/' },
   { label: '题库', to: '/problems' },
-  { label: '竞赛', to: '/contests' },
-  { label: '排名', to: '/rankings' },
-  { access: ACCESS_ENUM.ADMIN, label: '管理', to: '/admin/questions' },
+  // { label: '竞赛', to: '/contests' },
+  // { label: '排名', to: '/rankings' },
+  { access: ACCESS_ENUM.ADMIN, label: '管理', to: '/admin' },
 ]
 
 function Header() {

@@ -5,8 +5,6 @@ import '@/services/openapiConfig'
 import './index.css'
 import { routeTree } from './routeTree.gen'
 
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
 const router = createRouter({ routeTree })
 
 // Register the router instance for type safety

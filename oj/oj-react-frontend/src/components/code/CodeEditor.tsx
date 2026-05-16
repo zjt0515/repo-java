@@ -124,7 +124,7 @@ const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
 
     const debouncedHandleChange: MonacoEditorProps['onChange'] = debounce(
       (nextValue) => {
-        onChange(nextValue)
+        onChange?.(nextValue)
       }, 500
     )
 

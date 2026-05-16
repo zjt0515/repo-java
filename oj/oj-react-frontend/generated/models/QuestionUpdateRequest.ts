@@ -1,9 +1,11 @@
-/* generated using openapi-typescript-codegen -- do not edit */
+/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { JudgeCase } from './JudgeCase';
 import type { JudgeConfig } from './JudgeConfig';
+
 export type QuestionUpdateRequest = {
     answer?: string;
     content?: string;
@@ -13,4 +15,3 @@ export type QuestionUpdateRequest = {
     tags?: Array<string>;
     title?: string;
 };
-

@@ -1,0 +1,41 @@
+package com.zjt.ojjudgeservice.rabbitMq;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+
+@Slf4j
+@Component
+public class InitRabbitMqBean {
+
+    @Value("rabbitmq")
+    private String host;
+
+    @PostConstruct
+    public void init(){
+        try {
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setHost(host);
+            Connection connection = factory.newConnection();
+            Channel channel = connection.createChannel();
+            String EXCHANGE_NAME = "code_exchange";
+            channel.exchangeDeclare(EXCHANGE_NAME, "direct");
+
+            // 创建队列，随机分配一个队列名称
+            String queueName = "code_queue";
+            channel.queueDeclare(queueName, true, false, false, null);
+            channel.queueBind(queueName, EXCHANGE_NAME, "my_routingKey");
+            log.info("Rabbitmq Init Success!");
+        } catch (Exception e) {
+            log.error("Rabbitmq Init Failure!");
+        }
+    }
+    public static void main(String[] args) {
+
+    }
+}

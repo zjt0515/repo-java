@@ -29,7 +29,7 @@ const quickLinks = [
     description: '查看最近提交记录，复盘运行结果和状态。',
     icon: ListChecks,
     label: '提交记录',
-    to: '/submissions',
+    to: '/user/submissions',
   },
   {
     description: '关注竞赛安排，进入限时挑战节奏。',

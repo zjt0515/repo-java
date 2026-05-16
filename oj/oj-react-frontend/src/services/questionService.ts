@@ -1,4 +1,6 @@
 import { ApiError } from '../../generated/core/ApiError'
+import { OpenAPI } from '../../generated/core/OpenAPI'
+import { request as __request } from '../../generated/core/request'
 import type { BaseResponse_Page_Question_ } from '../../generated/models/BaseResponse_Page_Question_'
 import type { BaseResponse_Page_QuestionSubmitVO_ } from '../../generated/models/BaseResponse_Page_QuestionSubmitVO_'
 import type { BaseResponse_Page_QuestionVO_ } from '../../generated/models/BaseResponse_Page_QuestionVO_'
@@ -137,7 +139,7 @@ export async function getQuestion(id: QuestionId) {
 export async function getQuestionVO(id: QuestionId) {
   const response =
     (await QuestionControllerService.getQuestionVoByIdUsingGet(
-      String(id),
+      id,
     )) as BaseResponse_QuestionVO_
 
   return unwrapResponse<QuestionVO>(
@@ -171,9 +173,16 @@ export async function deleteQuestion(payload: DeleteQuestionRequest) {
 }
 
 export async function submitQuestion(payload: QuestionSubmitAddRequest) {
-  const response = (await QuestionControllerService.doQuestionSubmitUsingPost(
-    payload
-  )) as ApiResponse<LongResponseData>
+  const response = (await __request(OpenAPI, {
+    method: 'POST',
+    url: '/api/question/question_submit',
+    body: payload as unknown as GeneratedQuestionSubmitAddRequest,
+    errors: {
+      401: 'Unauthorized',
+      403: 'Forbidden',
+      404: 'Not Found',
+    },
+  })) as ApiResponse<LongResponseData>
 
   return unwrapResponse<LongResponseData>(response, '提交代码失败')
 }

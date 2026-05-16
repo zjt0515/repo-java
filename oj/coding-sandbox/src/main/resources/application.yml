@@ -1,3 +1,10 @@
 # 应用服务 WEB 访问端口
 server:
   port: 8115
+
+sandbox:
+  docker:
+    pool:
+      java-size: 2
+      node-size: 2
+      borrow-timeout-ms: 30000

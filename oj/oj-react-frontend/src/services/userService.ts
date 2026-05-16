@@ -1,11 +1,18 @@
 import { ApiError } from '../../generated/core/ApiError'
 import type { BaseResponse_LoginUserVO_ } from '../../generated/models/BaseResponse_LoginUserVO_'
+import type { BaseResponse_Page_User_ } from '../../generated/models/BaseResponse_Page_User_'
 import type { BaseResponse_boolean_ } from '../../generated/models/BaseResponse_boolean_'
 import type { BaseResponse_long_ } from '../../generated/models/BaseResponse_long_'
+import type { DeleteRequest } from '../../generated/models/DeleteRequest'
 import type { LoginUserVO } from '../../generated/models/LoginUserVO'
+import type { Page_User_ } from '../../generated/models/Page_User_'
+import type { User } from '../../generated/models/User'
+import type { UserAddRequest } from '../../generated/models/UserAddRequest'
 import type { UserLoginRequest } from '../../generated/models/UserLoginRequest'
+import type { UserQueryRequest } from '../../generated/models/UserQueryRequest'
 import type { UserRegisterRequest } from '../../generated/models/UserRegisterRequest'
 import type { UserUpdateMyRequest } from '../../generated/models/UserUpdateMyRequest'
+import type { UserUpdateRequest } from '../../generated/models/UserUpdateRequest'
 import { UserControllerService } from '../../generated/services/UserControllerService'
 
 type ApiResponse<T> = {
@@ -80,9 +87,45 @@ export async function updateMyUser(payload: UserUpdateMyRequest) {
   return unwrapResponse<boolean>(response, '更新个人信息失败')
 }
 
+export async function listUsers(payload: UserQueryRequest) {
+  const response = (await UserControllerService.listUserByPageUsingPost(
+    payload,
+  )) as BaseResponse_Page_User_
+
+  return unwrapResponse<Page_User_>(response, '获取用户列表失败')
+}
+
+export async function deleteUser(payload: DeleteRequest) {
+  const response = (await UserControllerService.deleteUserUsingPost(
+    payload,
+  )) as BaseResponse_boolean_
+
+  return unwrapResponse<boolean>(response, '删除用户失败')
+}
+
+export async function updateUser(payload: UserUpdateRequest) {
+  const response = (await UserControllerService.updateUserUsingPost(
+    payload,
+  )) as BaseResponse_boolean_
+
+  return unwrapResponse<boolean>(response, '更新用户失败')
+}
+
+export async function addUser(payload: UserAddRequest) {
+  const response = (await UserControllerService.addUserUsingPost(
+    payload,
+  )) as BaseResponse_long_
+
+  return unwrapResponse<number>(response, '新增用户失败')
+}
+
 export type {
   LoginUserVO,
+  User,
+  UserAddRequest,
   UserLoginRequest,
+  UserQueryRequest,
   UserRegisterRequest,
   UserUpdateMyRequest,
+  UserUpdateRequest,
 }
