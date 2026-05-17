@@ -89,6 +89,7 @@ public class JudgeServiceImpl implements JudgeService {
         judgeContext.setJudgeCaseList(judgeCaseList);
         judgeContext.setQuestion(question);
         judgeContext.setQuestionSubmit(questionSubmit);
+
         JudgeInfo judgeInfo = judgeManager.doJudge(judgeContext);
 
         // Update questionSubmit
@@ -100,7 +101,6 @@ public class JudgeServiceImpl implements JudgeService {
         if(!updateStatus) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "判题状态更新错误");
         }
-
         // Update Question (acceptedNum)
         if (JudgeInfoMessageEnum.ACCEPTED.getValue().equals(judgeInfo.getMessage())){
             Question questionById = questionFeignService.getQuestionById(questionId);

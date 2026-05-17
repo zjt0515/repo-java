@@ -8,6 +8,7 @@ import com.zjt.codingsandbox.model.ExecuteMessage;
 import com.zjt.codingsandbox.model.JudgeInfo;
 import com.zjt.codingsandbox.sandbox.CodeSandbox;
 import com.zjt.codingsandbox.utils.ProcessUtils;
+import com.zjt.codingsandbox.utils.ResponseUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -43,6 +44,9 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
 
         ExecuteMessage compileExecuteMessage = compileFile(userCodeFile);
         System.out.println(compileExecuteMessage);
+        if (compileExecuteMessage.getExitValue() == 1){
+            return ResponseUtils.getCompileErrExecuteCodeResponse();
+        }
 
         List<ExecuteMessage> executeMessageList = runCode(userCodeFile, inputList);
 
@@ -99,16 +103,18 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
              * @return
              */
     public ExecuteMessage compileFile(File userCodeFile) {
+        ExecuteMessage executeMessage = null;
         String compileCmd = String.format("%s -encoding utf-8 %s", JAVAC_8, userCodeFile.getAbsolutePath());
         try {
             Process compileProcess = Runtime.getRuntime().exec(compileCmd);
-            ExecuteMessage executeMessage = ProcessUtils.runProcess(compileProcess, "编译");
+            executeMessage = ProcessUtils.runProcess(compileProcess, "编译");
             if (executeMessage.getExitValue() != 0) {
                 throw new RuntimeException("编译错误");
             }
             return executeMessage;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception ignored) {
+        }finally {
+            return  executeMessage;
         }
     }
 
@@ -165,14 +171,20 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
         // 取用时最大值，便于判断是否超时
         long maxTime = 0;
         long maxMemory = 0;
+        String judgeInfoMessage = null;
         for (ExecuteMessage executeMessage : executeMessageList) {
             String errorMessage = executeMessage.getErrMessage();
-            if (StrUtil.isNotBlank(errorMessage)) {
-                executeCodeResponse.setMessage(errorMessage);
-                // 用户提交的代码执行中存在错误
-                executeCodeResponse.setStatus(3);
+            judgeInfoMessage = executeMessage.getJudgeInfoMessage();
+
+            if (StrUtil.isNotBlank(judgeInfoMessage)){
+                if (StrUtil.isNotBlank(errorMessage)) {
+                    executeCodeResponse.setMessage(errorMessage);
+                    // 用户提交的代码执行中存在错误
+                    executeCodeResponse.setStatus(3);
+                }
                 break;
             }
+
             outputList.add(executeMessage.getMessage());
             // update maxTime and maxMemory
             Long time = executeMessage.getTime();
@@ -191,6 +203,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
         executeCodeResponse.setOutputList(outputList);
         JudgeInfo judgeInfo = new JudgeInfo();
         judgeInfo.setTime(maxTime);
+        judgeInfo.setMessage(judgeInfoMessage);
         judgeInfo.setMemory(maxMemory / 1024 / 1024);
         executeCodeResponse.setJudgeInfo(judgeInfo);
         return executeCodeResponse;

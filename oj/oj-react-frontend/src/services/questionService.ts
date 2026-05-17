@@ -66,6 +66,7 @@ export type QuestionSubmitQueryRequest = Omit<
   'questionId'
 > & {
   questionId?: string
+  id?: string | number
 }
 
 type ApiResponse<T> = {
@@ -199,6 +200,23 @@ export async function listQuestionSubmissions(
     response as unknown as ApiResponse<PageQuestionSubmitVO>,
     '获取提交记录失败',
   )
+}
+
+export async function getQuestionSubmission(id: string | number) {
+  const response = (await __request(OpenAPI, {
+    method: 'GET',
+    url: '/api/question/question_submit/get/vo',
+    query: {
+      id: String(id),
+    },
+    errors: {
+      401: 'Unauthorized',
+      403: 'Forbidden',
+      404: 'Not Found',
+    },
+  })) as ApiResponse<QuestionSubmitVO>
+
+  return unwrapResponse<QuestionSubmitVO>(response, '获取提交详情失败')
 }
 
 export type {

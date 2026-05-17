@@ -1,5 +1,6 @@
 package com.zjt.codingsandbox.utils;
 
+import com.zjt.codingsandbox.enums.JudgeInfoMessageEnum;
 import com.zjt.codingsandbox.model.ExecuteCodeResponse;
 import com.zjt.codingsandbox.model.JudgeInfo;
 
@@ -17,6 +18,16 @@ public class ResponseUtils {
         executeCodeResponse.setOutputList(new ArrayList<>());
         executeCodeResponse.setStatus(2);
         executeCodeResponse.setJudgeInfo(new JudgeInfo());
+        return executeCodeResponse;
+    }
+
+    public static ExecuteCodeResponse getCompileErrExecuteCodeResponse(){
+        ExecuteCodeResponse executeCodeResponse = new ExecuteCodeResponse();
+        executeCodeResponse.setOutputList(new ArrayList<>());
+        executeCodeResponse.setStatus(2);
+        JudgeInfo judgeInfo = new JudgeInfo();
+        judgeInfo.setMessage(JudgeInfoMessageEnum.COMPILE_ERROR.getValue());
+        executeCodeResponse.setJudgeInfo(judgeInfo);
         return executeCodeResponse;
     }
 }

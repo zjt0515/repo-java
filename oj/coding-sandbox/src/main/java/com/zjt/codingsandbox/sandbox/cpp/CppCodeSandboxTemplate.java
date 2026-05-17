@@ -112,34 +112,42 @@ public abstract class CppCodeSandboxTemplate implements CodeSandbox {
     public ExecuteCodeResponse getOutputResponse(List<ExecuteMessage> executeMessageList) {
         ExecuteCodeResponse executeCodeResponse = new ExecuteCodeResponse();
         List<String> outputList = new ArrayList<>();
-        long maxTime = 0L;
-        long maxMemory = 0L;
-
+        // 取用时最大值，便于判断是否超时
+        long maxTime = 0;
+        long maxMemory = 0;
+        String judgeInfoMessage = null;
         for (ExecuteMessage executeMessage : executeMessageList) {
             String errorMessage = executeMessage.getErrMessage();
-            if (StrUtil.isNotBlank(errorMessage)) {
-                executeCodeResponse.setMessage(errorMessage);
-                executeCodeResponse.setStatus(3);
+            judgeInfoMessage = executeMessage.getJudgeInfoMessage();
+
+            if (StrUtil.isNotBlank(judgeInfoMessage)){
+                if (StrUtil.isNotBlank(errorMessage)) {
+                    executeCodeResponse.setMessage(errorMessage);
+                    // 用户提交的代码执行中存在错误
+                    executeCodeResponse.setStatus(3);
+                }
                 break;
             }
-            outputList.add(removeTrailingLineBreak(executeMessage.getMessage()));
 
+            outputList.add(executeMessage.getMessage());
+            // update maxTime and maxMemory
             Long time = executeMessage.getTime();
             Long memory = executeMessage.getMemory();
             if (time != null) {
                 maxTime = Math.max(maxTime, time);
             }
-            if (memory != null) {
+            if (memory != null){
                 maxMemory = Math.max(maxMemory, memory);
             }
         }
-
+        // 正常运行完成
         if (outputList.size() == executeMessageList.size()) {
             executeCodeResponse.setStatus(1);
         }
         executeCodeResponse.setOutputList(outputList);
         JudgeInfo judgeInfo = new JudgeInfo();
         judgeInfo.setTime(maxTime);
+        judgeInfo.setMessage(judgeInfoMessage);
         judgeInfo.setMemory(maxMemory / 1024 / 1024);
         executeCodeResponse.setJudgeInfo(judgeInfo);
         return executeCodeResponse;

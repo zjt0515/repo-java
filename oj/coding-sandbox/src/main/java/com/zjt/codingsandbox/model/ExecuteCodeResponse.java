@@ -21,7 +21,7 @@ public class ExecuteCodeResponse {
      */
     private String message;
     /**
-     * 判题状态
+     * 判题状态 0 1 2
      */
     private Integer status;
     /**

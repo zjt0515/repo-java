@@ -9,6 +9,7 @@ import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.Statistics;
 import com.github.dockerjava.api.model.StreamType;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
+import com.zjt.codingsandbox.enums.JudgeInfoMessageEnum;
 import com.zjt.codingsandbox.model.ExecuteMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StopWatch;
@@ -25,6 +26,8 @@ public class DockerCommandExecutor {
 
     private final DockerClient dockerClient;
 
+    private static final int OUTPUT_LIMIT = 10000;
+
     public DockerCommandExecutor(DockerClient dockerClient) {
         this.dockerClient = dockerClient;
     }
@@ -40,6 +43,7 @@ public class DockerCommandExecutor {
 
         StringBuilder messageBuilder = new StringBuilder();
         StringBuilder errorMessageBuilder = new StringBuilder();
+        String judgeInfoMessage = null;
         final long[] maxMemory = {0L};
 
         StatsCmd statsCmd = dockerClient.statsCmd(containerId);
@@ -91,10 +95,13 @@ public class DockerCommandExecutor {
             }
             stopWatch.stop();
 
+            // 超时
             if (!completed) {
                 dockerClient.stopContainerCmd(containerId).withTimeout(0).exec();
                 executeMessage.setExitValue(1);
-                executeMessage.setErrMessage("Time Limit Exceeded");
+                //executeMessage.setErrMessage("Time Limit Exceeded");
+                judgeInfoMessage = JudgeInfoMessageEnum.TIME_LIMIT_EXCEEDED.getValue();
+                executeMessage.setJudgeInfoMessage(judgeInfoMessage);
                 executeMessage.setTime(stopWatch.getLastTaskTimeMillis());
                 executeMessage.setMemory(maxMemory[0]);
                 return executeMessage;
@@ -106,8 +113,13 @@ public class DockerCommandExecutor {
 
             String message = emptyToNull(removeTrailingLineBreak(messageBuilder.toString()));
             String errorMessage = emptyToNull(removeTrailingLineBreak(errorMessageBuilder.toString()));
-            if (exitValue != 0 && errorMessage == null) {
-                errorMessage = message == null ? "Runtime Error" : message;
+            if (exitValue != 0) {
+                //errorMessage = message == null ? "Runtime Error" : message;
+                judgeInfoMessage = JudgeInfoMessageEnum.RUNTIME_ERROR.getValue();
+            }
+
+            if (message.length() > OUTPUT_LIMIT){
+                judgeInfoMessage = JudgeInfoMessageEnum.OUTPUT_LIMIT_EXCEEDED.getValue();
             }
 
             executeMessage.setExitValue(exitValue);
@@ -115,6 +127,7 @@ public class DockerCommandExecutor {
             executeMessage.setErrMessage(errorMessage);
             executeMessage.setTime(stopWatch.getLastTaskTimeMillis());
             executeMessage.setMemory(maxMemory[0]);
+            executeMessage.setJudgeInfoMessage(judgeInfoMessage);
             return executeMessage;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

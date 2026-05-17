@@ -4,6 +4,7 @@ import com.github.dockerjava.api.DockerClient;
 import com.zjt.codingsandbox.docker.DockerClientManager;
 import com.zjt.codingsandbox.docker.DockerCommandExecutor;
 import com.zjt.codingsandbox.docker.DockerContainerPool;
+import com.zjt.codingsandbox.enums.JudgeInfoMessageEnum;
 import com.zjt.codingsandbox.model.ExecuteMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,7 +61,7 @@ public class JavaCodeSandboxDocker extends JavaCodeSandboxTemplate {
                         TIME_OUT
                 );
                 executeMessageList.add(executeMessage);
-                if ("Time Limit Exceeded".equals(executeMessage.getErrMessage())) {
+                if (JudgeInfoMessageEnum.TIME_LIMIT_EXCEEDED.getValue().equals(executeMessage.getJudgeInfoMessage())){
                     reusable = false;
                     break;
                 }

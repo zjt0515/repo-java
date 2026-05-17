@@ -24,6 +24,7 @@ import { Route as UserSubmissionsRouteImport } from './routes/user/submissions'
 import { Route as UserRegisterRouteImport } from './routes/user/register'
 import { Route as UserProfileRouteImport } from './routes/user/profile'
 import { Route as UserLoginRouteImport } from './routes/user/login'
+import { Route as SubmissionsSubmissionIdRouteImport } from './routes/submissions/$submissionId'
 import { Route as ProblemsQuestionIdRouteImport } from './routes/problems/$questionId'
 import { Route as FooterTermsRouteImport } from './routes/footer/terms'
 import { Route as FooterPrivacyRouteImport } from './routes/footer/privacy'
@@ -110,6 +111,11 @@ const UserLoginRoute = UserLoginRouteImport.update({
   path: '/user/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubmissionsSubmissionIdRoute = SubmissionsSubmissionIdRouteImport.update({
+  id: '/submissions/$submissionId',
+  path: '/submissions/$submissionId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProblemsQuestionIdRoute = ProblemsQuestionIdRouteImport.update({
   id: '/$questionId',
   path: '/$questionId',
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/footer/privacy': typeof FooterPrivacyRoute
   '/footer/terms': typeof FooterTermsRoute
   '/problems/$questionId': typeof ProblemsQuestionIdRoute
+  '/submissions/$submissionId': typeof SubmissionsSubmissionIdRoute
   '/user/login': typeof UserLoginRoute
   '/user/profile': typeof UserProfileRoute
   '/user/register': typeof UserRegisterRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/footer/privacy': typeof FooterPrivacyRoute
   '/footer/terms': typeof FooterTermsRoute
   '/problems/$questionId': typeof ProblemsQuestionIdRoute
+  '/submissions/$submissionId': typeof SubmissionsSubmissionIdRoute
   '/user/login': typeof UserLoginRoute
   '/user/profile': typeof UserProfileRoute
   '/user/register': typeof UserRegisterRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/footer/privacy': typeof FooterPrivacyRoute
   '/footer/terms': typeof FooterTermsRoute
   '/problems/$questionId': typeof ProblemsQuestionIdRoute
+  '/submissions/$submissionId': typeof SubmissionsSubmissionIdRoute
   '/user/login': typeof UserLoginRoute
   '/user/profile': typeof UserProfileRoute
   '/user/register': typeof UserRegisterRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/footer/privacy'
     | '/footer/terms'
     | '/problems/$questionId'
+    | '/submissions/$submissionId'
     | '/user/login'
     | '/user/profile'
     | '/user/register'
@@ -281,6 +291,7 @@ export interface FileRouteTypes {
     | '/footer/privacy'
     | '/footer/terms'
     | '/problems/$questionId'
+    | '/submissions/$submissionId'
     | '/user/login'
     | '/user/profile'
     | '/user/register'
@@ -308,6 +319,7 @@ export interface FileRouteTypes {
     | '/footer/privacy'
     | '/footer/terms'
     | '/problems/$questionId'
+    | '/submissions/$submissionId'
     | '/user/login'
     | '/user/profile'
     | '/user/register'
@@ -333,6 +345,7 @@ export interface RootRouteChildren {
   FooterFeedbackRoute: typeof FooterFeedbackRoute
   FooterPrivacyRoute: typeof FooterPrivacyRoute
   FooterTermsRoute: typeof FooterTermsRoute
+  SubmissionsSubmissionIdRoute: typeof SubmissionsSubmissionIdRoute
   UserLoginRoute: typeof UserLoginRoute
   UserProfileRoute: typeof UserProfileRoute
   UserRegisterRoute: typeof UserRegisterRoute
@@ -444,6 +457,13 @@ declare module '@tanstack/react-router' {
       path: '/user/login'
       fullPath: '/user/login'
       preLoaderRoute: typeof UserLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/submissions/$submissionId': {
+      id: '/submissions/$submissionId'
+      path: '/submissions/$submissionId'
+      fullPath: '/submissions/$submissionId'
+      preLoaderRoute: typeof SubmissionsSubmissionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/problems/$questionId': {
@@ -588,6 +608,7 @@ const rootRouteChildren: RootRouteChildren = {
   FooterFeedbackRoute: FooterFeedbackRoute,
   FooterPrivacyRoute: FooterPrivacyRoute,
   FooterTermsRoute: FooterTermsRoute,
+  SubmissionsSubmissionIdRoute: SubmissionsSubmissionIdRoute,
   UserLoginRoute: UserLoginRoute,
   UserProfileRoute: UserProfileRoute,
   UserRegisterRoute: UserRegisterRoute,

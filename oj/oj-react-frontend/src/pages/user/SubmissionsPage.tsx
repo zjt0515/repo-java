@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import {
   ClipboardList,
-  Code2,
+  ExternalLink,
   Loader2,
   RefreshCw,
   Search,
@@ -10,14 +10,6 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import {
   Pagination,
@@ -48,17 +40,17 @@ import {
   type QuestionVO,
   type QuestionSubmitVO,
 } from '@/services/questionService'
+import {
+  formatJudgeMemory,
+  formatJudgeTime,
+  formatLanguage,
+  getResultMeta,
+  getStatusMeta,
+  languageOptions,
+} from '@/lib/submissionDisplay'
 
 const PAGE_SIZE = 10
 const ALL_VALUE = 'all'
-
-const languageOptions = [
-  { label: '全部语言', value: ALL_VALUE },
-  { label: 'Java', value: 'java' },
-  { label: 'C++', value: 'cpp' },
-  { label: 'Python', value: 'python' },
-  { label: 'JavaScript', value: 'javascript' },
-]
 
 const statusOptions = [
   { label: '全部状态', value: ALL_VALUE },
@@ -228,17 +220,30 @@ function SubmissionsPage() {
                       <SubmissionStatusBadge status={submission.status} />
                     </TableCell>
                     <TableCell className="hidden text-right sm:table-cell">
-                      {formatJudgeTime(submission.judgeInfo?.time)}
+                      {formatJudgeTime(submission.judgeInfo?.time, submission.judgeInfo?.message)}
                     </TableCell>
                     <TableCell className="hidden text-right sm:table-cell">
-                      {formatJudgeMemory(submission.judgeInfo?.memory)}
+                      {formatJudgeMemory(submission.judgeInfo?.memory, submission.judgeInfo?.message)}
                     </TableCell>
-                    <TableCell className="hidden max-w-xs truncate text-muted-foreground lg:table-cell">
-                      {submission.judgeInfo?.message || '-'}
+                    <TableCell className="hidden lg:table-cell">
+                      <SubmissionResultBadge message={submission.judgeInfo?.message} />
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-end">
-                        <SubmissionCodeDialog submission={submission} />
+                        <Button
+                          asChild
+                          disabled={!submission.id}
+                          size="sm"
+                          variant="ghost"
+                        >
+                          <Link
+                            params={{ submissionId: String(submission.id) }}
+                            to="/submissions/$submissionId"
+                          >
+                            <ExternalLink />
+                            详情
+                          </Link>
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -378,81 +383,14 @@ function SubmissionStatusBadge({ status }: { status?: number }) {
   )
 }
 
-function SubmissionCodeDialog({ submission }: { submission: QuestionSubmitVO }) {
-  const code = submission.code || ''
+function SubmissionResultBadge({ message }: { message?: string }) {
+  const item = getResultMeta(message)
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button disabled={!code} size="sm" variant="ghost">
-          <Code2 />
-          查看
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-3xl">
-        <DialogHeader>
-          <DialogTitle>提交代码</DialogTitle>
-          <DialogDescription>
-            {formatLanguage(submission.language)} · {getStatusMeta(submission.status).label}
-          </DialogDescription>
-        </DialogHeader>
-        <pre className="max-h-[60svh] overflow-auto rounded-lg border bg-muted/30 p-3 font-mono text-xs leading-5">
-          {code}
-        </pre>
-      </DialogContent>
-    </Dialog>
+    <Badge className={item.className} variant={item.variant}>
+      {item.label}
+    </Badge>
   )
-}
-
-function getStatusMeta(status?: number) {
-  switch (status) {
-    case 0:
-      return {
-        className: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
-        label: '待判题',
-        variant: 'outline' as const,
-      }
-    case 1:
-      return {
-        className: 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300',
-        label: '判题中',
-        variant: 'outline' as const,
-      }
-    case 2:
-      return {
-        className: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
-        label: '成功',
-        variant: 'outline' as const,
-      }
-    case 3:
-      return {
-        className: undefined,
-        label: '失败',
-        variant: 'destructive' as const,
-      }
-    default:
-      return {
-        className: undefined,
-        label: '未知',
-        variant: 'secondary' as const,
-      }
-  }
-}
-
-function formatLanguage(value?: string) {
-  if (!value) {
-    return '-'
-  }
-
-  return languageOptions.find((item) => item.value === value)?.label ?? value
-}
-
-function formatJudgeTime(value?: number) {
-  return value === undefined || value === null ? '-' : `${value} ms`
-}
-
-function formatJudgeMemory(value?: number) {
-  return value === undefined || value === null ? '-' : `${value} MB`
 }
 
 export default SubmissionsPage

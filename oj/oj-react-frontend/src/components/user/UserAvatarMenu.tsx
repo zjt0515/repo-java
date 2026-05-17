@@ -1,4 +1,5 @@
 import {
+  ClipboardList,
   Laptop,
   LogOut,
   Moon,
@@ -99,7 +100,7 @@ function UserAvatarMenu({ user }: UserAvatarMenuProps) {
 
         <DropdownMenuItem asChild>
           <Link to="/user/submissions">
-            <Settings />
+            <ClipboardList />
             提交查询
           </Link>
         </DropdownMenuItem>

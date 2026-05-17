@@ -340,4 +340,27 @@ public class QuestionController {
         return  success;
     }
 
+    /**
+     * 根据 id 获取提交 脱敏
+     * @param id
+     * @return
+     */
+    @GetMapping("/question_submit/get/vo")
+    public BaseResponse<QuestionSubmitVO> getQuestionSubmitById(long id, HttpServletRequest request) {
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        QuestionSubmit questionSubmit = questionSubmitService.getById(id);
+        if (questionSubmit == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        // 鉴权
+        User loginUser = userFeignClient.getLoginUser(request);
+        //if (!loginUser.getUserRole().equals("admin") && !question.getUserId().equals(loginUser.getId())) {
+        //    throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "非上传人或管理员不可获取所有数据");
+        //}
+        QuestionSubmitVO questionSubmitVO = questionSubmitService.getQuestionSubmitVO(questionSubmit, loginUser);
+        return ResultUtils.success(questionSubmitVO);
+    }
+
 }

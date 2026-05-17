@@ -11,7 +11,7 @@ public enum SubmitStatusEnum {
     // 后端判题状态使用Integer
     WAITING("待判题", 0),
     JUDGING("判题中", 1),
-    SUCCESS("成功", 2),
+    SUCCESS("已判题", 2),
     FAILURE("失败", 3);
 
     private final String text;

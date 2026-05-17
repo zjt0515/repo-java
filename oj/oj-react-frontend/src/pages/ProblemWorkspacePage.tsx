@@ -1,6 +1,8 @@
+import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import OjWorkspaceLayout from '@/layouts/OjWorkspaceLayout'
+import { useWorkspaceStore } from '@/stores/workspace'
 import {
   getQuestionRequestErrorMessage,
   getQuestionVO,
@@ -10,7 +12,6 @@ import {
 } from '@/services/questionService'
 
 const starterCode = ``
-const defaultLanguage = 'java'
 
 type ProblemWorkspacePageProps = {
   questionId?: string
@@ -23,9 +24,11 @@ export type QuestionSubmitResult = {
 }
 
 function ProblemWorkspacePage({ questionId }: ProblemWorkspacePageProps) {
+  const navigate = useNavigate()
   const invalidQuestionId = questionId !== undefined && !/^[1-9]\d*$/.test(questionId)
   const [code, setCode] = useState(starterCode)
-  const [language, setLanguage] = useState(defaultLanguage)
+  const language = useWorkspaceStore((state) => state.language)
+  const setLanguage = useWorkspaceStore((state) => state.setLanguage)
   const [question, setQuestion] = useState<Question>()
   const [loading, setLoading] = useState(Boolean(questionId) && !invalidQuestionId)
   const [error, setError] = useState('')
@@ -99,6 +102,7 @@ function ProblemWorkspacePage({ questionId }: ProblemWorkspacePageProps) {
         submittedAt: new Date(),
       })
       toast.success(`提交成功，提交编号 #${submitId}`)
+      void navigate({ to: '/submissions/$submissionId', params: { submissionId: submitId } })
     } catch (requestError) {
       toast.error(getQuestionRequestErrorMessage(requestError))
     } finally {
