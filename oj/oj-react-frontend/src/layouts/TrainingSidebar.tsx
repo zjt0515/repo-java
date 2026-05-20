@@ -1,59 +1,88 @@
-import { Settings2, Trophy } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { useEffect, useState } from 'react'
+import { Link } from '@tanstack/react-router'
+import { ChevronLeft, List } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { listQuestionVOs } from '@/services/questionService'
+import type { QuestionVO } from '@/services/questionService'
 
-const problems = [
-  { id: '1024', title: '两数之和最接近目标值', difficulty: '中等', status: '进行中' },
-  { id: '1031', title: '区间合并后的最大收益', difficulty: '困难', status: '未开始' },
-  { id: '0988', title: '链表中的环入口', difficulty: '简单', status: '已通过' },
-  { id: '1097', title: '最短编辑路径', difficulty: '中等', status: '未开始' },
-]
+type TrainingSidebarProps = {
+  currentQuestionId?: string
+  onToggle?: () => void
+}
 
-function TrainingSidebar() {
+function TrainingSidebar({ currentQuestionId, onToggle }: TrainingSidebarProps) {
+  const [problems, setProblems] = useState<QuestionVO[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchProblems() {
+      try {
+        const result = await listQuestionVOs({
+          current: 1,
+          pageSize: 20,
+          sortField: 'createTime',
+          sortOrder: 'descend',
+        })
+        setProblems(result.records ?? [])
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('获取题目列表失败:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    void fetchProblems()
+  }, [])
+
   return (
-    <aside className="hidden border-r bg-muted/25 lg:block">
-      <div className="flex h-12 items-center justify-between border-b px-4">
-        <span className="text-sm font-medium">今日训练</span>
-        <Button variant="ghost" size="icon-sm">
-          <Settings2 />
+    <aside className="hidden flex-col border-r bg-muted/25 lg:flex">
+      <div className="flex h-12 shrink-0 items-center justify-between border-b px-3">
+        <div className="flex items-center gap-2">
+          <List className="size-4 text-muted-foreground" />
+          <span className="text-sm font-medium">题目列表</span>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title="隐藏题单"
+          onClick={onToggle}
+        >
+          <ChevronLeft className="size-4" />
         </Button>
       </div>
-      <div className="space-y-4 p-3">
-        <div className="grid grid-cols-2 gap-2">
-          <Metric label="通过率" value="68%" />
-          <Metric label="连续" value="12 天" />
-        </div>
-        <section className="rounded-lg border bg-background">
-          <div className="flex items-center justify-between border-b px-3 py-2.5">
-            <span className="text-sm font-medium">推荐题单</span>
-            <Trophy className="size-4 text-muted-foreground" />
+      <div className="flex-1 overflow-y-auto">
+        {loading ? (
+          <div className="py-8 text-center text-xs text-muted-foreground">
+            加载中…
           </div>
-          <div className="divide-y">
-            {problems.map((problem) => (
-              <button
-                key={problem.id}
-                className="flex w-full items-start gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/60"
-                type="button"
-              >
-                <Badge
-                  variant="secondary"
-                  className="mt-0.5 rounded-md text-muted-foreground"
+        ) : problems.length === 0 ? (
+          <div className="py-8 text-center text-xs text-muted-foreground">
+            暂无题目
+          </div>
+        ) : (
+          <nav className="space-y-0.5 p-2">
+            {problems.map((problem) => {
+              const isActive = String(problem.id) === currentQuestionId
+              return (
+                <Link
+                  key={problem.id}
+                  className={`block rounded-md px-3 py-2 text-sm transition-colors ${
+                    isActive
+                      ? 'bg-primary/10 font-medium text-primary'
+                      : 'text-foreground hover:bg-muted/60'
+                  }`}
+                  params={{ questionId: String(problem.id) }}
+                  title={problem.title || `题目 #${problem.id}`}
+                  to="/problems/$questionId"
                 >
-                  {problem.id}
-                </Badge>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium">
-                    {problem.title}
+                  <span className="block truncate">
+                    {problem.title || `题目 #${problem.id}`}
                   </span>
-                  <span className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                    <StatusDot status={problem.status} />
-                    {problem.difficulty}
-                  </span>
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
+                </Link>
+              )
+            })}
+          </nav>
+        )}
       </div>
     </aside>
   )
@@ -66,17 +95,6 @@ function Metric({ label, value }: { label: string; value: string }) {
       <div className="mt-1 text-lg font-semibold tracking-tight">{value}</div>
     </div>
   )
-}
-
-function StatusDot({ status }: { status: string }) {
-  const color =
-    status === '已通过'
-      ? 'bg-emerald-500'
-      : status === '进行中'
-        ? 'bg-amber-500'
-        : 'bg-muted-foreground/40'
-
-  return <span className={`size-1.5 rounded-full ${color}`} />
 }
 
 export { Metric }

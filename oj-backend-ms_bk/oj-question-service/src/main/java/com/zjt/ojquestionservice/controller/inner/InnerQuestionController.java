@@ -2,23 +2,19 @@ package com.zjt.ojquestionservice.controller.inner;
 
 import com.zjt.ojmodel.model.entity.Question;
 import com.zjt.ojmodel.model.entity.QuestionSubmit;
-import com.zjt.ojmodel.model.entity.User;
 import com.zjt.ojquestionservice.service.QuestionService;
 import com.zjt.ojquestionservice.service.QuestionSubmitService;
-import com.zjt.ojserviceclient.service.QuestionFeignService;
-import com.zjt.ojserviceclient.service.UserFeignClient;
+import com.zjt.ojserviceclient.service.QuestionFeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * 内部调用 用户接口
  */
 @RestController()
 @RequestMapping("/inner")
-public class InnerQuestionController implements QuestionFeignService {
+public class InnerQuestionController implements QuestionFeignClient {
 
     @Resource
     private QuestionService questionService;
@@ -49,8 +45,4 @@ public class InnerQuestionController implements QuestionFeignService {
     public boolean updateQuestionSubmitById(@RequestBody QuestionSubmit questionSubmit){
         return  questionSubmitService.updateById(questionSubmit);
     }
-
-
-
-
 }

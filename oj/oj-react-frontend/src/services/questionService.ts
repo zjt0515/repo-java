@@ -219,6 +219,25 @@ export async function getQuestionSubmission(id: string | number) {
   return unwrapResponse<QuestionSubmitVO>(response, '获取提交详情失败')
 }
 
+export type QuestionTestResult = {
+  output?: string
+  message?: string
+  [key: string]: unknown
+}
+
+export async function submitQuestionTest(payload: {
+  code: string
+  language: string
+  judgeInputCase: string[]
+}) {
+  const response =
+    (await QuestionControllerService.doQuestionSubmitTestUsingPost(
+      payload,
+    )) as ApiResponse<unknown>
+
+  return unwrapResponse<unknown>(response, '测试运行失败')
+}
+
 export type {
   QuestionAddRequest,
   QuestionQueryRequest,

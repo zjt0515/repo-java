@@ -1,6 +1,7 @@
-import { BookOpen, FileText, Loader2 } from 'lucide-react'
+import { BookOpen, ChevronRight, FileText, Loader2 } from 'lucide-react'
 import { MarkdownViewer } from '@/components/markdown'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   formatAcceptRate,
@@ -12,8 +13,10 @@ import { Metric } from './TrainingSidebar'
 type ProblemDetailPanelProps = {
   error?: string
   loading?: boolean
+  onToggleSidebar?: () => void
   question?: Question
   questionId?: string
+  showSidebarToggle?: boolean
 }
 
 type JudgeCaseItem = {
@@ -39,8 +42,10 @@ const fallbackTestCases = [
 function ProblemDetailPanel({
   error,
   loading = false,
+  onToggleSidebar,
   question,
   questionId,
+  showSidebarToggle = false,
 }: ProblemDetailPanelProps) {
   const displayQuestion = question ?? fallbackQuestion
   const tags = parseQuestionTags(displayQuestion.tags)
@@ -49,13 +54,22 @@ function ProblemDetailPanel({
   return (
     <section className="border-r">
       <div className="flex h-12 items-center justify-between border-b px-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <BookOpen className="size-4" />
-          <span>题目详情</span>
+        <div className="flex items-center gap-2">
+          {showSidebarToggle && (
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              title="显示题单"
+              onClick={onToggleSidebar}
+            >
+              <ChevronRight className="size-4" />
+            </Button>
+          )}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <BookOpen className="size-4" />
+            <span>题目详情</span>
+          </div>
         </div>
-        <span className="rounded-md border px-2 py-0.5 text-xs text-muted-foreground">
-          #{question?.id ?? questionId ?? fallbackQuestion.id}
-        </span>
       </div>
       <div className="space-y-5 p-4 sm:p-5">
         {loading ? (

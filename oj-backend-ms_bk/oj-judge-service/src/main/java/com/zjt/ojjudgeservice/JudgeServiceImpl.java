@@ -3,21 +3,18 @@ package com.zjt.ojjudgeservice;
 import cn.hutool.json.JSONUtil;
 import com.zjt.ojcommon.common.ErrorCode;
 import com.zjt.ojcommon.exception.BusinessException;
-import com.zjt.ojjudgeservice.codesandbox.CodeSandbox;
-import com.zjt.ojjudgeservice.codesandbox.CodeSandboxFactory;
-import com.zjt.ojjudgeservice.codesandbox.CodeSandboxProxy;
+import com.zjt.ojjudgeservice.codesandbox.impl.RemoteCodeSandbox;
 import com.zjt.ojjudgeservice.strategy.JudgeContext;
 import com.zjt.ojmodel.model.codesandbox.ExecuteCodeRequest;
 import com.zjt.ojmodel.model.codesandbox.ExecuteCodeResponse;
 import com.zjt.ojmodel.model.codesandbox.JudgeInfo;
 import com.zjt.ojmodel.model.dto.question.JudgeCase;
-import com.zjt.ojmodel.model.dto.question.JudgeConfig;
+import com.zjt.ojmodel.model.dto.questionsubmit.QuestionSubmitTestRequest;
 import com.zjt.ojmodel.model.entity.Question;
 import com.zjt.ojmodel.model.entity.QuestionSubmit;
 import com.zjt.ojmodel.model.enums.JudgeInfoMessageEnum;
-import com.zjt.ojmodel.model.enums.JudgeInfoResultsEnum;
 import com.zjt.ojmodel.model.enums.SubmitStatusEnum;
-import com.zjt.ojserviceclient.service.QuestionFeignService;
+import com.zjt.ojserviceclient.service.QuestionFeignClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -31,20 +28,23 @@ public class JudgeServiceImpl implements JudgeService {
     private String type;
 
     @Resource
-    private QuestionFeignService questionFeignService;
+    private QuestionFeignClient questionFeignClient;
 
     @Resource
     private JudgeManager judgeManager;
 
+    @Resource
+    private RemoteCodeSandbox remoteCodeSandbox;
+
     @Override
     public QuestionSubmit doJudge(long questionSubmitId) {
         // 1. 查找submit，校验信息
-        QuestionSubmit questionSubmit = questionFeignService.getQuestionSubmitById(questionSubmitId);
+        QuestionSubmit questionSubmit = questionFeignClient.getQuestionSubmitById(questionSubmitId);
         if (questionSubmit == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "提交信息不存在");
         }
         Long questionId = questionSubmit.getQuestionId();
-        Question question = questionFeignService.getQuestionById(questionId);
+        Question question = questionFeignClient.getQuestionById(questionId);
         if (question == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "题目不存在");
         }
@@ -58,14 +58,14 @@ public class JudgeServiceImpl implements JudgeService {
         questionSubmitUpdate.setStatus(SubmitStatusEnum.JUDGING.getValue());
         questionSubmitUpdate.setId(questionSubmitId);
 
-        boolean updateStatus = questionFeignService.updateQuestionSubmitById(questionSubmitUpdate);
+        boolean updateStatus = questionFeignClient.updateQuestionSubmitById(questionSubmitUpdate);
         if (!updateStatus) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "判题状态更新错误");
         }
 
         // 3. 调用代码沙箱
-        CodeSandbox codeSandbox = CodeSandboxFactory.newInstance(type);
-        codeSandbox = new CodeSandboxProxy(codeSandbox);
+        //CodeSandbox codeSandbox = CodeSandboxFactory.newInstance(type);
+        //codeSandbox = new CodeSandboxProxy(codeSandbox);
         String language = questionSubmit.getLanguage();
         String code = questionSubmit.getCode();
         String judgeCaseStr = question.getJudgeCase();
@@ -78,7 +78,7 @@ public class JudgeServiceImpl implements JudgeService {
                 .language(language)
                 .inputList(inputList)
                 .build();
-        ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
+        ExecuteCodeResponse executeCodeResponse = remoteCodeSandbox.executeCode(executeCodeRequest);
         List<String> outputList = executeCodeResponse.getOutputList();
 
         // 4. 根据沙箱的执行结果，设置题目的判题状态和信息
@@ -97,17 +97,48 @@ public class JudgeServiceImpl implements JudgeService {
         questionSubmitUpdate.setId(questionSubmitId);
         questionSubmitUpdate.setStatus(SubmitStatusEnum.SUCCESS.getValue());
         questionSubmitUpdate.setJudgeInfo(JSONUtil.toJsonStr(judgeInfo));
-        updateStatus = questionFeignService.updateQuestionSubmitById(questionSubmitUpdate);
+        updateStatus = questionFeignClient.updateQuestionSubmitById(questionSubmitUpdate);
         if(!updateStatus) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "判题状态更新错误");
         }
         // Update Question (acceptedNum)
         if (JudgeInfoMessageEnum.ACCEPTED.getValue().equals(judgeInfo.getMessage())){
-            Question questionById = questionFeignService.getQuestionById(questionId);
+            Question questionById = questionFeignClient.getQuestionById(questionId);
             Integer acceptedNum = questionById.getAcceptedNum();
             questionById.setAcceptedNum(acceptedNum + 1);
-            questionFeignService.updateQuestionById(questionById);
+            questionFeignClient.updateQuestionById(questionById);
         }
-        return questionFeignService.getQuestionSubmitById(questionSubmitId);
+        return questionFeignClient.getQuestionSubmitById(questionSubmitId);
+    }
+
+    @Override
+    public ExecuteCodeResponse doTest(QuestionSubmitTestRequest questionSubmitTestRequest) {
+        // 1. 校验信息
+        String language = questionSubmitTestRequest.getLanguage();
+        String code = questionSubmitTestRequest.getCode();
+        List<String> inputList = questionSubmitTestRequest.getJudgeInputCase();
+
+        if (language == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "语言不存在");
+        }
+        if (code == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "代码不存在");
+        }
+        if (inputList == null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "样例不存在");
+        }
+
+        // 调用代码沙箱
+        //CodeSandbox codeSandbox = CodeSandboxFactory.newInstance(type);
+        //codeSandbox = new CodeSandboxProxy(codeSandbox);
+
+        ExecuteCodeRequest executeCodeRequest = ExecuteCodeRequest.builder()
+                .code(code)
+                .language(language)
+                .inputList(inputList)
+                .build();
+        ExecuteCodeResponse executeCodeResponse = remoteCodeSandbox.executeCode(executeCodeRequest);
+
+        return  executeCodeResponse;
     }
 }

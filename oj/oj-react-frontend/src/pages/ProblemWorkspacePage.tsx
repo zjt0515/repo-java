@@ -7,9 +7,11 @@ import {
   getQuestionRequestErrorMessage,
   getQuestionVO,
   submitQuestion,
+  submitQuestionTest,
   type Question,
   type QuestionVO,
 } from '@/services/questionService'
+import type { TestResult } from '@/layouts/CodeWorkspacePanel'
 
 const starterCode = ``
 
@@ -34,6 +36,9 @@ function ProblemWorkspacePage({ questionId }: ProblemWorkspacePageProps) {
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitResult, setSubmitResult] = useState<QuestionSubmitResult>()
+  const [testing, setTesting] = useState(false)
+  const [testInput, setTestInput] = useState('')
+  const [testResult, setTestResult] = useState<TestResult>()
   const displayError = invalidQuestionId ? '题目编号无效' : error
 
   useEffect(() => {
@@ -110,6 +115,62 @@ function ProblemWorkspacePage({ questionId }: ProblemWorkspacePageProps) {
     }
   }
 
+  function toNum(value: unknown): number | undefined {
+    if (typeof value === 'number') return value
+    if (typeof value === 'string') {
+      const n = Number(value)
+      if (!Number.isNaN(n)) return n
+    }
+    return undefined
+  }
+
+  async function handleRunCode() {
+    const trimmedCode = code.trim()
+    if (!trimmedCode) {
+      toast.error('请先编写代码再运行')
+      return
+    }
+
+    setTesting(true)
+    setTestResult(undefined)
+    try {
+      const result = await submitQuestionTest({
+        code,
+        language,
+        judgeInputCase: [testInput],
+      })
+
+      if (typeof result === 'string') {
+        setTestResult({ status: 1, outputList: [result], judgeInfo: {} })
+        return
+      }
+
+      if (!result || typeof result !== 'object') {
+        setTestResult({ status: 1, outputList: [String(result)], judgeInfo: {} })
+        return
+      }
+
+      const r = result as Record<string, unknown>
+      const ji = (r.judgeInfo as Record<string, unknown> | undefined) ?? {}
+
+      setTestResult({
+        status: toNum(r.status),
+        outputList: Array.isArray(r.outputList) ? (r.outputList as string[]) : undefined,
+        judgeInfo: {
+          memory: toNum(ji.memory),
+          time: toNum(ji.time),
+          message: typeof ji.message === 'string' ? ji.message : undefined,
+        },
+      })
+    } catch (requestError) {
+      const message = getQuestionRequestErrorMessage(requestError)
+      setTestResult({ judgeInfo: { message: `运行失败：${message}` } })
+      toast.error(message)
+    } finally {
+      setTesting(false)
+    }
+  }
+
   return (
     <OjWorkspaceLayout
       code={code}
@@ -118,12 +179,17 @@ function ProblemWorkspacePage({ questionId }: ProblemWorkspacePageProps) {
       loading={loading}
       onCodeChange={setCode}
       onLanguageChange={setLanguage}
+      onRunCode={handleRunCode}
       onSubmitCode={handleSubmitCode}
       question={question}
       questionId={questionId}
       submitDisabled={loading || Boolean(displayError)}
       submitResult={submitResult}
       submitting={submitting}
+      testInput={testInput}
+      onTestInputChange={setTestInput}
+      testResult={testResult}
+      testing={testing}
     />
   )
 }

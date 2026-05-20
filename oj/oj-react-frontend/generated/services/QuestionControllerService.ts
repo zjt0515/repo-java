@@ -16,6 +16,7 @@ import type { QuestionQueryRequest } from '../models/QuestionQueryRequest';
 import type { QuestionSubmitAddRequest } from '../models/QuestionSubmitAddRequest';
 import type { QuestionSubmitQueryRequest } from '../models/QuestionSubmitQueryRequest';
 import type { QuestionUpdateRequest } from '../models/QuestionUpdateRequest';
+import type {QuestionSubmitTestRequest} from '../models/QuestionSubmitTestRequest'
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -208,12 +209,34 @@ questionQueryRequest: QuestionQueryRequest,
      * @returns any Created
      * @throws ApiError
      */
-    public static doQuestionSubmitUsingPost(
-questionSubmitAddRequest: QuestionSubmitAddRequest,
+    public static doQuestionSubmitTestUsingPost(
+questionSubmitTestRequest: QuestionSubmitTestRequest,
 ): CancelablePromise<BaseResponse_long_ | any> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/question/question_submit/do',
+            url: '/api/question/question_submit_test',
+            body: questionSubmitTestRequest,
+            errors: {
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+            },
+        });
+    }
+
+    /**
+     * doQuestionSubmit
+     * @param questionSubmitAddRequest questionSubmitAddRequest
+     * @returns BaseResponse_long_ OK
+     * @returns any Created
+     * @throws ApiError
+     */
+    public static doQuestionSubmitUsingPost(
+        questionSubmitAddRequest: QuestionSubmitAddRequest,
+    ): CancelablePromise<BaseResponse_long_ | any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/question/question_submit/test',
             body: questionSubmitAddRequest,
             errors: {
                 401: `Unauthorized`,
@@ -222,6 +245,7 @@ questionSubmitAddRequest: QuestionSubmitAddRequest,
             },
         });
     }
+
 
     /**
      * listQuestionSubmitByPage

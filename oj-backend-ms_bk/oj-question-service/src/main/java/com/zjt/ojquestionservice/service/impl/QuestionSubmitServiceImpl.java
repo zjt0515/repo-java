@@ -170,7 +170,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         QuestionSubmitVO questionSubmitVO = QuestionSubmitVO.objToVo(questionSubmit);
         // 不是本人代码/管理员 不能看到对应的敏感信息？
         long id = loginUser.getId();
-        if (id != questionSubmit.getUserId() && userFeignClient.isAdmin(loginUser)){
+        if (id != questionSubmit.getUserId() && userFeignClient.isAdmin(loginUser)) {
             questionSubmitVO.setCode(null);
         }
         return questionSubmitVO;

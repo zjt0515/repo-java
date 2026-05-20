@@ -187,7 +187,7 @@ function UserAdminListPage() {
   }
 
   function openAddDialog() {
-    setAddForm({ userRole: 'user' })
+    setAddForm({ userRole: 'user', userPassword: '' })
     setAddDialogOpen(true)
   }
 
@@ -198,6 +198,10 @@ function UserAdminListPage() {
     }
     if (!addForm.userName?.trim()) {
       toast.error('用户名不能为空')
+      return
+    }
+    if (!addForm.userPassword?.trim()) {
+      toast.error('用户密码不能为空')
       return
     }
 
@@ -478,6 +482,18 @@ function UserAdminListPage() {
                 }
                 placeholder="请输入登录账号"
                 value={addForm.userAccount || ''}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="add-password">用户密码</Label>
+              <Input
+                id="add-password"
+                onChange={(e) =>
+                  setAddForm((f) => ({ ...f, userPassword: e.target.value }))
+                }
+                placeholder="请输入登录密码"
+                type="password"
+                value={addForm.userPassword || ''}
               />
             </div>
             <div className="grid gap-2">

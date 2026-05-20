@@ -7,7 +7,7 @@ import type { DeleteRequest } from '../../generated/models/DeleteRequest'
 import type { LoginUserVO } from '../../generated/models/LoginUserVO'
 import type { Page_User_ } from '../../generated/models/Page_User_'
 import type { User } from '../../generated/models/User'
-import type { UserAddRequest } from '../../generated/models/UserAddRequest'
+import type { UserAddRequest as _UserAddRequest } from '../../generated/models/UserAddRequest'
 import type { UserLoginRequest } from '../../generated/models/UserLoginRequest'
 import type { UserQueryRequest } from '../../generated/models/UserQueryRequest'
 import type { UserRegisterRequest } from '../../generated/models/UserRegisterRequest'
@@ -113,7 +113,7 @@ export async function updateUser(payload: UserUpdateRequest) {
 
 export async function addUser(payload: UserAddRequest) {
   const response = (await UserControllerService.addUserUsingPost(
-    payload,
+    payload as _UserAddRequest,
   )) as BaseResponse_long_
 
   return unwrapResponse<number>(response, '新增用户失败')
@@ -122,10 +122,13 @@ export async function addUser(payload: UserAddRequest) {
 export type {
   LoginUserVO,
   User,
-  UserAddRequest,
   UserLoginRequest,
   UserQueryRequest,
   UserRegisterRequest,
   UserUpdateMyRequest,
   UserUpdateRequest,
+}
+
+export type UserAddRequest = _UserAddRequest & {
+  userPassword?: string
 }

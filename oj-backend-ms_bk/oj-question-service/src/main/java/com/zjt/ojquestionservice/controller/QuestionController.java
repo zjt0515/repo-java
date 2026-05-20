@@ -12,9 +12,11 @@ import com.zjt.ojcommon.common.ResultUtils;
 import com.zjt.ojcommon.constant.UserConstant;
 import com.zjt.ojcommon.exception.BusinessException;
 import com.zjt.ojcommon.exception.ThrowUtils;
+import com.zjt.ojmodel.model.codesandbox.ExecuteCodeResponse;
 import com.zjt.ojmodel.model.dto.question.*;
 import com.zjt.ojmodel.model.dto.questionsubmit.QuestionSubmitAddRequest;
 import com.zjt.ojmodel.model.dto.questionsubmit.QuestionSubmitQueryRequest;
+import com.zjt.ojmodel.model.dto.questionsubmit.QuestionSubmitTestRequest;
 import com.zjt.ojmodel.model.entity.Question;
 import com.zjt.ojmodel.model.entity.QuestionSubmit;
 import com.zjt.ojmodel.model.entity.User;
@@ -24,9 +26,9 @@ import com.zjt.ojquestionservice.mapper.QuestionSubmitMapper;
 import com.zjt.ojquestionservice.service.QuestionService;
 import com.zjt.ojquestionservice.service.QuestionSubmitService;
 import com.zjt.ojserviceclient.service.UserFeignClient;
+import com.zjt.ojserviceclient.service.JudgeFeignClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -54,6 +56,9 @@ public class QuestionController {
     private final static Gson GSON = new Gson();
     @Resource
     private QuestionSubmitMapper questionSubmitMapper;
+
+    @Resource
+    private JudgeFeignClient judgeFeignClient;
 
     /**
      * 创建题目
@@ -311,6 +316,25 @@ public class QuestionController {
         final User loginUser = userFeignClient.getLoginUser(request);
         long questionSubmitId = questionSubmitService.doQuestionSubmit(questionSubmitAddRequest, loginUser);
         return ResultUtils.success(questionSubmitId);
+    }
+
+    /**
+     * 测试题目
+     * @param questionSubmitTestRequest 题目提交入参
+     * @param request
+     * @return 题目提交id
+     */
+    @PostMapping("/question_submit_test")
+    public BaseResponse<ExecuteCodeResponse> testQuestionSubmit(@RequestBody QuestionSubmitTestRequest questionSubmitTestRequest,
+                                               HttpServletRequest request) {
+        // 校验
+        if (questionSubmitTestRequest == null ) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 调用 service
+        final User loginUser = userFeignClient.getLoginUser(request);
+        ExecuteCodeResponse executeCodeResponse = judgeFeignClient.testJudge(questionSubmitTestRequest);
+        return ResultUtils.success(executeCodeResponse);
     }
 
     /**

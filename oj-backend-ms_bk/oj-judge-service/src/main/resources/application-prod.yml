@@ -25,3 +25,7 @@ mybatis-plus:
   configuration:
     # 生产环境关闭日志
     log-impl: ''
+# 代码沙箱配置
+codesandbox:
+  type: remote
+  url: http://host.docker.internal:8115/executeCode

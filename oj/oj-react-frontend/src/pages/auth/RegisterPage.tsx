@@ -59,7 +59,7 @@ function RegisterPage() {
 
   return (
     <main className="flex min-h-[calc(100svh-3.5rem)] items-center justify-center bg-muted/20 p-4 sm:p-6">
-      <section className="grid w-full max-w-5xl overflow-hidden rounded-lg border bg-background shadow-sm md:grid-cols-[1.05fr_0.95fr]">
+      <section className="w-full max-w-md overflow-hidden rounded-lg border bg-background shadow-sm">
         <div className="p-6 sm:p-8">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">创建账号</h1>
@@ -120,28 +120,6 @@ function RegisterPage() {
               </FieldDescription>
             </FieldGroup>
           </form>
-        </div>
-
-        <div className="hidden border-l bg-muted/30 p-8 md:block">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <UserPlus className="size-5" />
-          </div>
-          <h2 className="mt-6 text-3xl font-semibold tracking-tight">
-            构建你的解题档案
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            账号会用于关联提交记录、竞赛积分和个人题单，后续也可以扩展头像、简介和主页展示。
-          </p>
-          <div className="mt-8 space-y-3 text-sm">
-            {['提交记录自动归档', '题目收藏和训练计划', '竞赛排名和通过率统计'].map((item) => (
-              <div
-                className="rounded-lg border bg-background/70 px-3 py-2"
-                key={item}
-              >
-                {item}
-              </div>
-            ))}
-          </div>
         </div>
       </section>
     </main>

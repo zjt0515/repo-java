@@ -59,16 +59,11 @@ function LoginPage() {
               <LogIn className="size-5" />
             </div>
             <h1 className="mt-6 text-3xl font-semibold tracking-tight">
-              继续你的刷题节奏
+              继续做题
             </h1>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
-              登录后可以同步提交记录、收藏题目、查看训练进度，并继续编辑上一次的代码。
+              登录后可以同步提交记录、并提交代码。
             </p>
-          </div>
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <Metric label="今日提交" value="18" />
-            <Metric label="通过率" value="68%" />
-            <Metric label="连续" value="12天" />
           </div>
         </div>
 

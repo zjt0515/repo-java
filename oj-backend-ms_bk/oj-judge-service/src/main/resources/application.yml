@@ -55,5 +55,6 @@ mybatis-plus:
 # 代码沙箱配置
 codesandbox:
   type: remote
+  url: http://localhost:8115/executeCode
 knife4j:
     enable: true

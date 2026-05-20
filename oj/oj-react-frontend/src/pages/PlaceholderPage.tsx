@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 
 type PlaceholderPageProps = {
@@ -22,8 +23,8 @@ function PlaceholderPage({
         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
           {description}
         </p>
-        <Button className="mt-5" variant="outline">
-          即将接入
+        <Button className="mt-5" variant="outline" asChild>
+          <Link to="/">返回首页</Link>
         </Button>
       </section>
     </main>

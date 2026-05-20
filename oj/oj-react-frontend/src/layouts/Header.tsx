@@ -28,7 +28,7 @@ function Header() {
   return (
     <header className="sticky top-0 z-20 border-b bg-background/95 backdrop-blur">
       <div className="flex h-14 items-center gap-3 px-4 sm:px-5">
-        <Button variant="ghost" size="icon" className="lg:hidden">
+        <Button variant="ghost" size="icon" className="hidden lg:hidden">
           <Menu />
         </Button>
         <Link className="flex min-w-0 items-center gap-2" to="/">
@@ -55,14 +55,14 @@ function Header() {
             ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          <div className="relative hidden w-64 md:block">
+          <div className="relative hidden w-64">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               className="bg-muted/40 pl-8"
               placeholder="搜索题目、标签、提交记录"
             />
           </div>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="hidden">
             <Bell />
           </Button>
           {/* avatar */}
