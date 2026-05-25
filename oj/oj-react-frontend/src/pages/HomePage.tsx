@@ -3,21 +3,14 @@ import {
   BarChart3,
   BookOpen,
   CheckCircle2,
-  Code2,
   Flame,
   ListChecks,
   Play,
-  Terminal,
-  Zap,
 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import HeatMap from '@/components/home/HeatMap'
 import { Button } from '@/components/ui/button'
-
-const features = [
-  { label: '在线编码', description: '浏览器内直接编写与调试', icon: Terminal },
-  { label: '即时判题', description: '提交后立即获得运行结果', icon: Zap },
-  { label: '进度追踪', description: '记录每次练习与成长轨迹', icon: BarChart3 },
-]
+import { platformConfig } from '@/config/platform'
 
 const quickLinks = [
   {
@@ -34,8 +27,6 @@ const quickLinks = [
   },
 ]
 
-const tracks = ['数组与字符串', '搜索与图论', '动态规划', '数据结构']
-
 function HomePage() {
   return (
     <main className="min-h-[calc(100svh-3.5rem)] bg-background">
@@ -45,16 +36,16 @@ function HomePage() {
           <div className="flex flex-col gap-7">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border bg-background px-3 py-1 text-sm font-medium text-muted-foreground">
               <Flame className="size-4 text-orange-500" />
-              OJ Console
+              {platformConfig.home.heroBadge}
             </div>
             <div className="max-w-3xl">
               <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-                把每一次练习变成
+                {platformConfig.home.heroTitle[0]}
                 <br className="hidden sm:block" />
-                可追踪的进步
+                {platformConfig.home.heroTitle[1]}
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-                从题库筛选、在线编码、提交判题到排名反馈，围绕日常训练整理一条清晰的刷题路径。
+                {platformConfig.home.heroDescription}
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
@@ -73,59 +64,7 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="rounded-xl border bg-background shadow-sm">
-            <div className="flex items-center justify-between border-b px-4 py-3">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Code2 className="size-4 text-primary" />
-                平台能力
-              </div>
-              <div className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                已就绪
-              </div>
-            </div>
-            <div className="space-y-4 p-4">
-              <div className="grid grid-cols-3 gap-2">
-                {features.map((item) => (
-                  <div
-                    className="rounded-lg border bg-muted/30 p-3 transition-colors hover:bg-muted/50"
-                    key={item.label}
-                  >
-                    <item.icon className="mb-3 size-4 text-primary" />
-                    <div className="truncate text-sm font-semibold">{item.label}</div>
-                    <div className="mt-1 truncate text-xs text-muted-foreground">
-                      {item.description}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="rounded-lg border bg-muted/20 p-4">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-sm font-semibold">推荐学习方向</div>
-                    <div className="mt-1 text-xs text-muted-foreground">
-                      按主题推进，适合系统练习
-                    </div>
-                  </div>
-                  <Button asChild size="sm" variant="secondary">
-                    <Link to="/problems">进入</Link>
-                  </Button>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {tracks.map((track, index) => (
-                    <div
-                      className="flex items-center gap-2 rounded-md border bg-background px-3 py-2 text-sm"
-                      key={track}
-                    >
-                      <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
-                        {index + 1}
-                      </span>
-                      <span className="truncate">{track}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <HeatMap />
         </div>
       </section>
 

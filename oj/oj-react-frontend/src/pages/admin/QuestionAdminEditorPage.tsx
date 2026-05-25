@@ -269,10 +269,7 @@ function QuestionAdminEditorPage({ questionId }: QuestionAdminEditorPageProps) {
                     每组用例会提交给后端作为 judgeCase 数组
                   </p>
                 </div>
-                <Button onClick={addJudgeCase} type="button" variant="outline">
-                  <Plus />
-                  添加
-                </Button>
+
               </div>
 
               <div className="space-y-3">
@@ -316,6 +313,11 @@ function QuestionAdminEditorPage({ questionId }: QuestionAdminEditorPageProps) {
                     </div>
                   </div>
                 ))}
+
+                                <Button onClick={addJudgeCase} type="button" variant="outline">
+                  <Plus />
+                  添加
+                </Button>
               </div>
             </section>
 

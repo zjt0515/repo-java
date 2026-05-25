@@ -37,10 +37,7 @@ export type { Page_User_ } from "./models/Page_User_";
 export type { Page_UserVO_ } from "./models/Page_UserVO_";
 export type { PostAddRequest } from "./models/PostAddRequest";
 export type { PostEditRequest } from "./models/PostEditRequest";
-export type { PostFavourAddRequest } from "./models/PostFavourAddRequest";
-export type { PostFavourQueryRequest } from "./models/PostFavourQueryRequest";
 export type { PostQueryRequest } from "./models/PostQueryRequest";
-export type { PostThumbAddRequest } from "./models/PostThumbAddRequest";
 export type { PostUpdateRequest } from "./models/PostUpdateRequest";
 export type { PostVO } from "./models/PostVO";
 export type { Question } from "./models/Question";
@@ -62,9 +59,12 @@ export type { UserUpdateRequest } from "./models/UserUpdateRequest";
 export type { UserVO } from "./models/UserVO";
 
 export { FileControllerService } from "./services/FileControllerService";
-export { PostControllerService } from "./services/PostControllerService";
-export { PostFavourControllerService } from "./services/PostFavourControllerService";
-export { PostThumbControllerService } from "./services/PostThumbControllerService";
 export { QuestionControllerService } from "./services/QuestionControllerService";
 export { UserControllerService } from "./services/UserControllerService";
-export { WxMpControllerService } from "./services/WxMpControllerService";
+
+export type { BaseResponse_Page_Post_ } from './models/BaseResponse_Page_Post_';
+export type { BaseResponse_Post_ } from './models/BaseResponse_Post_';
+export type { Page_Post_ } from './models/Page_Post_';
+export type { Post } from './models/Post';
+
+export { PostControllerService } from '../generated/services/PostControllerService';

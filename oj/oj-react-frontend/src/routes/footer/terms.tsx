@@ -1,5 +1,6 @@
 import { ScrollText } from 'lucide-react'
 import { createFileRoute } from '@tanstack/react-router'
+import { platformConfig } from '@/config/platform'
 import InfoPage from '@/pages/InfoPage'
 
 export const Route = createFileRoute('/footer/terms')({
@@ -9,7 +10,7 @@ export const Route = createFileRoute('/footer/terms')({
 function TermsPage() {
   return (
     <InfoPage
-      description="使用 OJ Console 即表示你同意遵守平台的基本使用规则，并对自己的账号和提交内容负责。"
+      description={platformConfig.legal.termsDescription}
       icon={ScrollText}
       sections={[
         {

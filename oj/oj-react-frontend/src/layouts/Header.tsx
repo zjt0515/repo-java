@@ -4,6 +4,7 @@ import { ModeToggle } from '@/components/user/ModeToggle'
 import UserAvatarMenu from '@/components/user/UserAvatarMenu'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { platformConfig } from '@/config/platform'
 import { ACCESS_ENUM, checkAccess, type AccessType } from '@/lib/auth/accessCheck'
 import { cn } from '@/lib/utils'
 import { useUserStore } from '@/stores/user'
@@ -36,8 +37,10 @@ function Header() {
             <Code2 className="size-4" />
           </div>
           <div className="leading-none">
-            <div className="text-sm font-semibold">OJ Console</div>
-            <div className="text-xs text-muted-foreground">Practice</div>
+            <div className="text-sm font-semibold">{platformConfig.name}</div>
+            <div className="text-xs text-muted-foreground">
+              {platformConfig.header.subtitle}
+            </div>
           </div>
         </Link>
         <nav className="ml-5 hidden items-center gap-1 md:flex">

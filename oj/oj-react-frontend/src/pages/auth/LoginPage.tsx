@@ -11,6 +11,7 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { platformConfig } from '@/config/platform'
 import { getUserRequestErrorMessage } from '@/services/userService'
 import { useUserStore } from '@/stores/user'
 
@@ -71,7 +72,7 @@ function LoginPage() {
           <div>
             <h2 className="text-2xl font-semibold tracking-tight">用户登录</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              使用你的 OJ 账号进入控制台
+              {platformConfig.auth.loginDescription}
             </p>
           </div>
 
@@ -118,15 +119,6 @@ function LoginPage() {
         </div>
       </section>
     </main>
-  )
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border bg-background/70 px-3 py-2">
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div className="mt-1 text-sm font-semibold">{value}</div>
-    </div>
   )
 }
 

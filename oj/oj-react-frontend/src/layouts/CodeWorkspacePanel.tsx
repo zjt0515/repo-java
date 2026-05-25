@@ -1,6 +1,5 @@
 import {
   Activity,
-  CheckCircle2,
   Loader2,
   Play,
   Send,

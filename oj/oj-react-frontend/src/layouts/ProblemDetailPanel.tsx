@@ -44,7 +44,6 @@ function ProblemDetailPanel({
   loading = false,
   onToggleSidebar,
   question,
-  questionId,
   showSidebarToggle = false,
 }: ProblemDetailPanelProps) {
   const displayQuestion = question ?? fallbackQuestion

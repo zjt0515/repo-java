@@ -1,5 +1,6 @@
 import { Code2 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { platformConfig } from '@/config/platform'
 
 function Footer() {
   const currentYear = new Date().getFullYear()
@@ -17,13 +18,15 @@ function Footer() {
             <Code2 className="size-4" />
           </div>
           <div>
-            <div className="font-medium text-foreground">OJ Console</div>
-            <div className="text-xs">在线刷题与评测平台</div>
+            <div className="font-medium text-foreground">
+              {platformConfig.name}
+            </div>
+            <div className="text-xs">{platformConfig.footer.description}</div>
           </div>
         </div>
 
         <div className="text-xs md:ml-6">
-          Copyright {currentYear} OJ Console
+          Copyright {currentYear} {platformConfig.footer.copyrightName}
         </div>
 
         <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 md:ml-auto md:justify-end">
