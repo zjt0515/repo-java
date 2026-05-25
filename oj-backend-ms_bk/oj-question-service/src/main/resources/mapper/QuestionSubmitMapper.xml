@@ -108,4 +108,25 @@
         ORDER BY qs.create_time DESC
     </select>
 
+    <select id="selectSubmitHeatmap" resultType="com.zjt.ojmodel.model.vo.QuestionSubmitHeatmapItemVO">
+        SELECT
+            to_char(qs.create_time, 'YYYY-MM-DD') AS date,
+            COUNT(*) AS submit_count,
+            COALESCE(SUM(
+                CASE
+                    WHEN qs.status = 2
+                        AND qs.judge_info::jsonb ->> 'message' = 'Accepted'
+                    THEN 1
+                    ELSE 0
+                END
+            ), 0) AS accepted_count
+        FROM question_submit qs
+        WHERE qs.is_delete = 0
+            AND qs.user_id = #{userId}
+            AND qs.create_time &gt;= #{startTime}
+            AND qs.create_time &lt; #{endTime}
+        GROUP BY to_char(qs.create_time, 'YYYY-MM-DD')
+        ORDER BY date ASC
+    </select>
+
 </mapper>

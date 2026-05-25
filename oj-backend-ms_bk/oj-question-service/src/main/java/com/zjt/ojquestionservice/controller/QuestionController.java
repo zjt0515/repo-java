@@ -15,11 +15,13 @@ import com.zjt.ojcommon.exception.ThrowUtils;
 import com.zjt.ojmodel.model.codesandbox.ExecuteCodeResponse;
 import com.zjt.ojmodel.model.dto.question.*;
 import com.zjt.ojmodel.model.dto.questionsubmit.QuestionSubmitAddRequest;
+import com.zjt.ojmodel.model.dto.questionsubmit.QuestionSubmitHeatmapRequest;
 import com.zjt.ojmodel.model.dto.questionsubmit.QuestionSubmitQueryRequest;
 import com.zjt.ojmodel.model.dto.questionsubmit.QuestionSubmitTestRequest;
 import com.zjt.ojmodel.model.entity.Question;
 import com.zjt.ojmodel.model.entity.QuestionSubmit;
 import com.zjt.ojmodel.model.entity.User;
+import com.zjt.ojmodel.model.vo.QuestionSubmitHeatmapVO;
 import com.zjt.ojmodel.model.vo.QuestionSubmitVO;
 import com.zjt.ojmodel.model.vo.QuestionVO;
 import com.zjt.ojquestionservice.mapper.QuestionSubmitMapper;
@@ -362,6 +364,21 @@ public class QuestionController {
         BaseResponse<Page<QuestionSubmitVO>> success = ResultUtils.success(questionSubmitService.getQuestionSubmitVOPage((Page<QuestionSubmit>) questionSubmitIPage, loginUser));
 
         return  success;
+    }
+
+    /**
+     * 获取提交热力图
+     *
+     * @param questionSubmitHeatmapRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/question_submit/heatmap")
+    public BaseResponse<QuestionSubmitHeatmapVO> getQuestionSubmitHeatmap(@RequestBody(required = false) QuestionSubmitHeatmapRequest questionSubmitHeatmapRequest,
+                                                                          HttpServletRequest request) {
+        User loginUser = userFeignClient.getLoginUser(request);
+        QuestionSubmitHeatmapVO heatmapVO = questionSubmitService.getQuestionSubmitHeatmap(questionSubmitHeatmapRequest, loginUser);
+        return ResultUtils.success(heatmapVO);
     }
 
     /**

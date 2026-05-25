@@ -9,6 +9,7 @@ import com.zjt.ojmodel.model.enums.JudgeInfoMessageEnum;
 
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 默认判题策略
@@ -24,18 +25,42 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
     public JudgeInfo doJudge(JudgeContext judgeContext) {
         // 获取上下文
         JudgeInfo judgeInfo = judgeContext.getJudgeInfo();
-        Long memory = judgeInfo.getMemory();
-        Long time = judgeInfo.getTime();
+        Long memory = Optional.ofNullable(judgeInfo.getMemory()).orElse(0L);
+        Long time = Optional.ofNullable(judgeInfo.getTime()).orElse(0L);
+        String message = judgeInfo.getMessage();
+
         List<String> inputList = judgeContext.getInputList();
         List<String> outputList = judgeContext.getOutputList();
         Question question = judgeContext.getQuestion();
         List<JudgeCase> judgeCaseList = judgeContext.getJudgeCaseList();
         JudgeInfoMessageEnum judgeInfoMessageEnum = JudgeInfoMessageEnum.ACCEPTED;
 
-        // 构造JuadgeInfo
+        // build response
         JudgeInfo judgeInfoResponse = new JudgeInfo();
         judgeInfoResponse.setMemory(memory);
         judgeInfoResponse.setTime(time);
+
+        if (JudgeInfoMessageEnum.COMPILE_ERROR.getValue().equals(message)){
+            judgeInfoResponse.setMessage(JudgeInfoMessageEnum.COMPILE_ERROR.getValue());
+            return  judgeInfoResponse;
+        }else if (JudgeInfoMessageEnum.RUNTIME_ERROR.getValue().equals(message)){
+            judgeInfoResponse.setMessage(JudgeInfoMessageEnum.RUNTIME_ERROR.getValue());
+            return  judgeInfoResponse;
+        }else if (JudgeInfoMessageEnum.SYSTEM_ERROR.getValue().equals(message)){
+            judgeInfoResponse.setMessage(JudgeInfoMessageEnum.SYSTEM_ERROR.getValue());
+            return  judgeInfoResponse;
+        }else if (JudgeInfoMessageEnum.TIME_LIMIT_EXCEEDED.getValue().equals(message)){
+            judgeInfoResponse.setMessage(JudgeInfoMessageEnum.TIME_LIMIT_EXCEEDED.getValue());
+            return judgeInfoResponse;
+        }else if (JudgeInfoMessageEnum.MEMORY_LIMIT_EXCEEDED.getValue().equals(message)){
+            judgeInfoResponse.setMessage(JudgeInfoMessageEnum.MEMORY_LIMIT_EXCEEDED.getValue());
+            return judgeInfoResponse;
+        }else if (JudgeInfoMessageEnum.OUTPUT_LIMIT_EXCEEDED.getValue().equals(message)){
+            judgeInfoResponse.setMessage(JudgeInfoMessageEnum.OUTPUT_LIMIT_EXCEEDED.getValue());
+            return judgeInfoResponse;
+        }
+
+        // set judgeinfo.message
 
         // 先判断沙箱执行的结果输出数量是否和预期输出数量相等
         if (outputList.size() != inputList.size()) {
@@ -52,17 +77,21 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
                 return judgeInfoResponse;
             }
         }
-        // 判断题目限制
+        // 题目限制
         String judgeConfigStr = question.getJudgeConfig();
         JudgeConfig judgeConfig = JSONUtil.toBean(judgeConfigStr, JudgeConfig.class);
         Long needMemoryLimit = judgeConfig.getMemoryLimit();
         Long needTimeLimit = judgeConfig.getTimeLimit();
+        // MLE
         if (memory > needMemoryLimit) {
             judgeInfoMessageEnum = JudgeInfoMessageEnum.MEMORY_LIMIT_EXCEEDED;
             judgeInfoResponse.setMessage(judgeInfoMessageEnum.getValue());
             return judgeInfoResponse;
         }
-        if (time > needTimeLimit) {
+        // TLE
+        // 执行开销
+        long PROGRAM_TIME_COST = 2000L;
+        if ((time - PROGRAM_TIME_COST) > needTimeLimit) {
             judgeInfoMessageEnum = JudgeInfoMessageEnum.TIME_LIMIT_EXCEEDED;
             judgeInfoResponse.setMessage(judgeInfoMessageEnum.getValue());
             return judgeInfoResponse;

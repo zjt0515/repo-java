@@ -36,5 +36,7 @@ CREATE TABLE IF NOT EXISTS question_submit
     );
 CREATE INDEX IF NOT EXISTS idx_question_id ON question_submit (question_id);
 CREATE INDEX IF NOT EXISTS idx_user_id ON question_submit (user_id);
+CREATE INDEX IF NOT EXISTS idx_question_submit_user_create_time_not_deleted
+    ON question_submit (user_id, create_time)
+    WHERE is_delete = 0;
 COMMENT ON TABLE question_submit IS '题目提交';
-

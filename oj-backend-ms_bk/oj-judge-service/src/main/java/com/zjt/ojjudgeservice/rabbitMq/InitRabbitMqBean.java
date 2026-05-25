@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
 @Component
 public class InitRabbitMqBean {
 
-    @Value("rabbitmq")
+    @Value("localhost")
     private String host;
 
     @PostConstruct
@@ -36,6 +36,5 @@ public class InitRabbitMqBean {
         }
     }
     public static void main(String[] args) {
-
     }
 }

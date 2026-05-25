@@ -2,6 +2,7 @@ package com.zjt.ojjudgeservice;
 
 
 import com.zjt.ojjudgeservice.strategy.DefaultJudgeStrategy;
+import com.zjt.ojjudgeservice.strategy.cpp.CppLanguageJudgeStrategy;
 import com.zjt.ojjudgeservice.strategy.java.JavaLanguageJudgeStrategy;
 import com.zjt.ojjudgeservice.strategy.JudgeContext;
 import com.zjt.ojjudgeservice.strategy.JudgeStrategy;
@@ -32,6 +33,8 @@ public class JudgeManager {
             judgeStrategy = new JavaLanguageJudgeStrategy();
         }else if ("javascript".equals(language) || "js".equals(language)){
             judgeStrategy = new JavascriptLanguageJudgeStrategy();
+        }else if ("cpp".equals(language) || "c++".equals(language)){
+            judgeStrategy = new CppLanguageJudgeStrategy();
         }
         return judgeStrategy.doJudge(judgeContext);
     }

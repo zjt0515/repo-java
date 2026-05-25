@@ -74,7 +74,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
         if (StringUtils.isNotBlank(answer) && answer.length() > 8192) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "答案过长");
         }
-        if (StringUtils.isNotBlank(judgeCase) && judgeCase.length() > 8192) {
+        if (StringUtils.isNotBlank(judgeCase) && judgeCase.length() > 819200) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "判题用例过长");
         }
         if (StringUtils.isNotBlank(judgeConfig) && judgeConfig.length() > 8192) {

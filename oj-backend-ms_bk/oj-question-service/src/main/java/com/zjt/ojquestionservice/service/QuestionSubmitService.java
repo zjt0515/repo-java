@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zjt.ojmodel.model.dto.questionsubmit.QuestionSubmitAddRequest;
+import com.zjt.ojmodel.model.dto.questionsubmit.QuestionSubmitHeatmapRequest;
 import com.zjt.ojmodel.model.dto.questionsubmit.QuestionSubmitQueryRequest;
 import com.zjt.ojmodel.model.entity.QuestionSubmit;
 import com.zjt.ojmodel.model.entity.User;
+import com.zjt.ojmodel.model.vo.QuestionSubmitHeatmapVO;
 import com.zjt.ojmodel.model.vo.QuestionSubmitVO;
 
 /**
@@ -48,5 +50,15 @@ public interface QuestionSubmitService extends IService<QuestionSubmit> {
      * @return
      */
     Page<QuestionSubmitVO> getQuestionSubmitVOPage(Page<QuestionSubmit> questionSubmitPage, User loginUser);
+
+    /**
+     * 获取提交热力图数据
+     *
+     * @param questionSubmitHeatmapRequest 查询请求
+     * @param loginUser                    当前登录用户
+     * @return
+     */
+    QuestionSubmitHeatmapVO getQuestionSubmitHeatmap(QuestionSubmitHeatmapRequest questionSubmitHeatmapRequest,
+                                                     User loginUser);
 
 }
