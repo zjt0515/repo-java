@@ -29,9 +29,9 @@ const quickLinks = [
 
 function HomePage() {
   return (
-    <main className="min-h-[calc(100svh-3.5rem)] bg-[#efefef]">
+    <main className="min-h-[calc(100svh-3.5rem)] bg-[#efefef] dark:bg-background">
       {/* Hero */}
-      <section className="border-b bg-[#efefef]">
+      <section className="border-b bg-[#efefef] dark:bg-background">
         <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] lg:items-center lg:py-14">
           <div className="flex flex-col gap-7">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border bg-background px-3 py-1 text-sm font-medium text-muted-foreground">
@@ -107,7 +107,7 @@ function HomePage() {
       </section>
 
       {/* Core features */}
-      <section className="border-t bg-[#efefef]">
+      <section className="border-t bg-[#efefef] dark:bg-background">
         <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
           <div className="mb-8 text-center">
             <h2 className="text-2xl font-semibold tracking-tight">围绕训练闭环设计</h2>

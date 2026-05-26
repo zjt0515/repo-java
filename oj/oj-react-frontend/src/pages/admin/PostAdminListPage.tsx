@@ -41,11 +41,11 @@ import {
   addPost,
   deletePost,
   getPostRequestErrorMessage,
-  listPosts,
+  listPostVOs,
   updatePost,
-  type Post,
   type PostAddRequest,
   type PostUpdateRequest,
+  type PostVO,
 } from '@/services/postService'
 import {
   formatQuestionDateTime,
@@ -73,7 +73,7 @@ function PostAdminListPage() {
   const [keyword, setKeyword] = useState('')
   const [submittedKeyword, setSubmittedKeyword] = useState('')
   const [current, setCurrent] = useState(1)
-  const [records, setRecords] = useState<Post[]>([])
+  const [records, setRecords] = useState<PostVO[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
   const [deletingId, setDeletingId] = useState<number | null>(null)
@@ -83,7 +83,7 @@ function PostAdminListPage() {
   const [adding, setAdding] = useState(false)
 
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [editingPost, setEditingPost] = useState<Post | null>(null)
+  const [editingPost, setEditingPost] = useState<PostVO | null>(null)
   const [editForm, setEditForm] = useState<PostFormState>(EMPTY_POST_FORM)
   const [saving, setSaving] = useState(false)
 
@@ -92,7 +92,7 @@ function PostAdminListPage() {
   const fetchPosts = useCallback(async () => {
     setLoading(true)
     try {
-      const page = await listPosts({
+      const page = await listPostVOs({
         current,
         pageSize: PAGE_SIZE,
         sortField: 'createTime',
@@ -128,7 +128,7 @@ function PostAdminListPage() {
     setAddDialogOpen(true)
   }
 
-  function openEditDialog(post: Post) {
+  function openEditDialog(post: PostVO) {
     setEditingPost(post)
     setEditForm({
       content: post.content || '',
@@ -190,7 +190,7 @@ function PostAdminListPage() {
     }
   }
 
-  async function handleDelete(post: Post) {
+  async function handleDelete(post: PostVO) {
     if (!post.id) {
       return
     }
@@ -549,7 +549,7 @@ function PostTableSkeleton() {
   ))
 }
 
-function TagList({ value }: { value?: string }) {
+function TagList({ value }: { value?: string | string[] }) {
   const tags = parseQuestionTags(value)
 
   if (tags.length === 0) {
