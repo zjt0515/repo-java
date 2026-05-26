@@ -36,7 +36,7 @@ public abstract class CppCodeSandboxTemplate implements CodeSandbox {
     private static final long COMPILE_TIME_OUT = 10000L;
 
     @Override
-    public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
+    public ExecuteCodeResponse execute(ExecuteCodeRequest executeCodeRequest) {
         List<String> inputList = executeCodeRequest.getInputList();
         String code = executeCodeRequest.getCode();
 
@@ -119,6 +119,14 @@ public abstract class CppCodeSandboxTemplate implements CodeSandbox {
         for (ExecuteMessage executeMessage : executeMessageList) {
             String errorMessage = executeMessage.getErrMessage();
             judgeInfoMessage = executeMessage.getJudgeInfoMessage();
+            Long time = executeMessage.getTime();
+            Long memory = executeMessage.getMemory();
+            if (time != null) {
+                maxTime = Math.max(maxTime, time);
+            }
+            if (memory != null){
+                maxMemory = Math.max(maxMemory, memory);
+            }
 
             if (StrUtil.isNotBlank(judgeInfoMessage)){
                 if (StrUtil.isNotBlank(errorMessage)) {
@@ -130,15 +138,6 @@ public abstract class CppCodeSandboxTemplate implements CodeSandbox {
             }
 
             outputList.add(executeMessage.getMessage());
-            // update maxTime and maxMemory
-            Long time = executeMessage.getTime();
-            Long memory = executeMessage.getMemory();
-            if (time != null) {
-                maxTime = Math.max(maxTime, time);
-            }
-            if (memory != null){
-                maxMemory = Math.max(maxMemory, memory);
-            }
         }
         // 正常运行完成
         if (outputList.size() == executeMessageList.size()) {
@@ -148,7 +147,7 @@ public abstract class CppCodeSandboxTemplate implements CodeSandbox {
         JudgeInfo judgeInfo = new JudgeInfo();
         judgeInfo.setTime(maxTime);
         judgeInfo.setMessage(judgeInfoMessage);
-        judgeInfo.setMemory(maxMemory / 1024 / 1024);
+        judgeInfo.setMemory((maxMemory + 1024 * 1024 - 1) / 1024 / 1024);
         executeCodeResponse.setJudgeInfo(judgeInfo);
         return executeCodeResponse;
     }

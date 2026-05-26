@@ -45,5 +45,18 @@ services:
       - oj-user-service
       - oj-question-service
       - oj-gateway
+  oj-post-service:
+    container_name: oj-post-service
+    build:
+      context: ./oj-post-service
+      dockerfile: Dockerfile
+    ports:
+      - "8105:8105"
+    networks:
+      - mynetwork
+    depends_on:
+      - oj-user-service
+      - oj-question-service
+      - oj-gateway
 networks:
   mynetwork:

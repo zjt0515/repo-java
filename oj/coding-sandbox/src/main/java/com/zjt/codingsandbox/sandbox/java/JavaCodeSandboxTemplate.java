@@ -29,10 +29,12 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
 
     private static final long TIME_OUT = 5000L;
 
-    private static final String JAVAC_8 = "/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac";
+    private static final String JAVAC_8_MAC = "/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac";
+
+    private static final String JAVAC_8_WIN = "C:\\Program Files\\Zulu\\zulu-8\\bin\\javac.exe";
 
     @Override
-    public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
+    public ExecuteCodeResponse execute(ExecuteCodeRequest executeCodeRequest) {
         List<String> inputList = executeCodeRequest.getInputList();
         String code = executeCodeRequest.getCode();
         String language = executeCodeRequest.getLanguage();
@@ -41,10 +43,13 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
         System.out.println(executeMessage);
 
         File userCodeFile = saveCodeToFile(code);
+        for (int i = 0; i < inputList.size(); i++) {
+            saveInputToFile(userCodeFile.getParent(), inputList.get(i), i);
+        }
 
         ExecuteMessage compileExecuteMessage = compileFile(userCodeFile);
         System.out.println(compileExecuteMessage);
-        if (compileExecuteMessage.getExitValue() == 1){
+        if (compileExecuteMessage == null || compileExecuteMessage.getExitValue() == 1){
             return ResponseUtils.getCompileErrExecuteCodeResponse();
         }
 
@@ -79,6 +84,15 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
         return FileUtil.writeString(code, userCodePath, StandardCharsets.UTF_8);
     }
 
+    public File saveInputToFile(String parentPath, String input, Number i) {
+        String inputFilePath = parentPath + File.separator + i + ".txt";
+        String inputText = input == null ? "" : input;
+        if (!inputText.endsWith("\n")) {
+            inputText += "\n";
+        }
+        return FileUtil.writeString(inputText, inputFilePath, StandardCharsets.UTF_8);
+    }
+
     /**
      * 查看java版本
      * @return
@@ -103,8 +117,8 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
              * @return
              */
     public ExecuteMessage compileFile(File userCodeFile) {
+        String compileCmd = String.format("javac -encoding utf-8 %s", userCodeFile.getAbsolutePath());
         ExecuteMessage executeMessage = null;
-        String compileCmd = String.format("%s -encoding utf-8 %s", JAVAC_8, userCodeFile.getAbsolutePath());
         try {
             Process compileProcess = Runtime.getRuntime().exec(compileCmd);
             executeMessage = ProcessUtils.runProcess(compileProcess, "编译");
@@ -113,8 +127,8 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
             }
             return executeMessage;
         } catch (Exception ignored) {
-        }finally {
-            return  executeMessage;
+        } finally {
+            return executeMessage;
         }
     }
 
@@ -175,6 +189,14 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
         for (ExecuteMessage executeMessage : executeMessageList) {
             String errorMessage = executeMessage.getErrMessage();
             judgeInfoMessage = executeMessage.getJudgeInfoMessage();
+            Long time = executeMessage.getTime();
+            Long memory = executeMessage.getMemory();
+            if (time != null) {
+                maxTime = Math.max(maxTime, time);
+            }
+            if (memory != null){
+                maxMemory = Math.max(maxMemory, memory);
+            }
 
             if (StrUtil.isNotBlank(judgeInfoMessage)){
                 if (StrUtil.isNotBlank(errorMessage)) {
@@ -186,15 +208,6 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
             }
 
             outputList.add(executeMessage.getMessage());
-            // update maxTime and maxMemory
-            Long time = executeMessage.getTime();
-            Long memory = executeMessage.getMemory();
-            if (time != null) {
-                maxTime = Math.max(maxTime, time);
-            }
-            if (memory != null){
-                maxMemory = Math.max(maxMemory, memory);
-            }
         }
         // 正常运行完成
         if (outputList.size() == executeMessageList.size()) {

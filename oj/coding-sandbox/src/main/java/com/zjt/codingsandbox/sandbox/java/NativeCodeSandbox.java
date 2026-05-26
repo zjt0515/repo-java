@@ -10,7 +10,6 @@ import com.zjt.codingsandbox.model.ExecuteMessage;
 import com.zjt.codingsandbox.model.JudgeInfo;
 import com.zjt.codingsandbox.sandbox.CodeSandbox;
 import com.zjt.codingsandbox.utils.ProcessUtils;
-import com.zjt.codingsandbox.utils.ResponseUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +21,7 @@ import java.util.*;
 @Slf4j
 public class NativeCodeSandbox implements CodeSandbox {
     private static final String GLOBAL_CODE_DIRNAME = "tmpCode";
-    private static final String JAVAC_8 = "/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac";
+    private static final String JAVAC_8_MAC = "/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac";
 
     // 用户代码类名
     private static final String GLOBAL_JAVA_CLASS_NAME = "Main.java";
@@ -58,12 +57,12 @@ public class NativeCodeSandbox implements CodeSandbox {
         executeCodeRequest.setLanguage("java");
         executeCodeRequest.setInputList(Arrays.asList("1 3"));
 
-        ExecuteCodeResponse executeCodeResponse = nativeCodeSandbox.executeCode(executeCodeRequest);
+        ExecuteCodeResponse executeCodeResponse = nativeCodeSandbox.execute(executeCodeRequest);
         System.out.println(executeCodeResponse);
     }
 
     @Override
-    public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
+    public ExecuteCodeResponse execute(ExecuteCodeRequest executeCodeRequest) {
         List<String> inputList = executeCodeRequest.getInputList();
         String code = executeCodeRequest.getCode();
         String language = executeCodeRequest.getLanguage();
@@ -124,7 +123,7 @@ public class NativeCodeSandbox implements CodeSandbox {
      * @return
      */
     public ExecuteMessage compile(File javaFile){
-        String compileCmd = String.format("%s -encoding utf-8 %s",JAVAC_8, javaFile.getAbsolutePath());
+        String compileCmd = String.format("java -encoding utf-8 %s", javaFile.getAbsolutePath());
         try {
             Process compileProcess = Runtime.getRuntime().exec(compileCmd);
             ExecuteMessage executeMessage = ProcessUtils.runProcess(compileProcess, "compile");

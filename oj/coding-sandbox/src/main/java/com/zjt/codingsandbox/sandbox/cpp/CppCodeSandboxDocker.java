@@ -29,7 +29,7 @@ public class CppCodeSandboxDocker extends CppCodeSandboxTemplate {
     @Resource
     private DockerClientManager dockerClientManager;
 
-    @Value("${sandbox.docker.pool.cpp-size:2}")
+    @Value("${sandbox.docker.pool.cpp-size:1}")
     private int poolSize;
 
     @Value("${sandbox.docker.pool.borrow-timeout-ms:30000}")
@@ -42,12 +42,12 @@ public class CppCodeSandboxDocker extends CppCodeSandboxTemplate {
     /**
      * Docker 模式在容器内编译，避免依赖宿主机 g++ 或产生宿主机平台的可执行文件。
      */
-    @Override
-    public ExecuteMessage compileFile(File codeFile) {
-        ExecuteMessage executeMessage = new ExecuteMessage();
-        executeMessage.setExitValue(0);
-        return executeMessage;
-    }
+    // @Override
+    // public ExecuteMessage compileFile(File codeFile) {
+    //     ExecuteMessage executeMessage = new ExecuteMessage();
+    //     executeMessage.setExitValue(0);
+    //     return executeMessage;
+    // }
 
     /**
      * 借用常驻容器，把当前 C++ 源码和输入文件同步到容器工作目录后编译并执行。
@@ -95,6 +95,8 @@ public class CppCodeSandboxDocker extends CppCodeSandboxTemplate {
         } catch (RuntimeException e) {
             reusable = false;
             throw e;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } finally {
             if (container != null) {
                 if (reusable) {

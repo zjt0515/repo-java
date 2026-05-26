@@ -31,9 +31,14 @@ import { Route as FooterPrivacyRouteImport } from './routes/footer/privacy'
 import { Route as FooterFeedbackRouteImport } from './routes/footer/feedback'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminQuestionsRouteImport } from './routes/admin/questions'
+import { Route as AdminPostsRouteImport } from './routes/admin/posts'
 import { Route as AdminUsersIndexRouteImport } from './routes/admin/users/index'
 import { Route as AdminQuestionsIndexRouteImport } from './routes/admin/questions/index'
+import { Route as AdminPostsIndexRouteImport } from './routes/admin/posts/index'
+import { Route as ProblemsQuestionIdSolutionsRouteImport } from './routes/problems/$questionId.solutions'
 import { Route as AdminQuestionsNewRouteImport } from './routes/admin/questions/new'
+import { Route as ProblemsQuestionIdSolutionsNewRouteImport } from './routes/problems/$questionId.solutions.new'
+import { Route as ProblemsQuestionIdSolutionsPostIdRouteImport } from './routes/problems/$questionId.solutions.$postId'
 import { Route as AdminQuestionsQuestionIdEditRouteImport } from './routes/admin/questions/$questionId/edit'
 
 const RankingsRoute = RankingsRouteImport.update({
@@ -146,6 +151,11 @@ const AdminQuestionsRoute = AdminQuestionsRouteImport.update({
   path: '/questions',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPostsRoute = AdminPostsRouteImport.update({
+  id: '/posts',
+  path: '/posts',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -156,11 +166,34 @@ const AdminQuestionsIndexRoute = AdminQuestionsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminQuestionsRoute,
 } as any)
+const AdminPostsIndexRoute = AdminPostsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminPostsRoute,
+} as any)
+const ProblemsQuestionIdSolutionsRoute =
+  ProblemsQuestionIdSolutionsRouteImport.update({
+    id: '/solutions',
+    path: '/solutions',
+    getParentRoute: () => ProblemsQuestionIdRoute,
+  } as any)
 const AdminQuestionsNewRoute = AdminQuestionsNewRouteImport.update({
   id: '/new',
   path: '/new',
   getParentRoute: () => AdminQuestionsRoute,
 } as any)
+const ProblemsQuestionIdSolutionsNewRoute =
+  ProblemsQuestionIdSolutionsNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => ProblemsQuestionIdSolutionsRoute,
+  } as any)
+const ProblemsQuestionIdSolutionsPostIdRoute =
+  ProblemsQuestionIdSolutionsPostIdRouteImport.update({
+    id: '/$postId',
+    path: '/$postId',
+    getParentRoute: () => ProblemsQuestionIdSolutionsRoute,
+  } as any)
 const AdminQuestionsQuestionIdEditRoute =
   AdminQuestionsQuestionIdEditRouteImport.update({
     id: '/$questionId/edit',
@@ -178,12 +211,13 @@ export interface FileRoutesByFullPath {
   '/contests': typeof ContestsRoute
   '/problems': typeof ProblemsRouteWithChildren
   '/rankings': typeof RankingsRoute
+  '/admin/posts': typeof AdminPostsRouteWithChildren
   '/admin/questions': typeof AdminQuestionsRouteWithChildren
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/footer/feedback': typeof FooterFeedbackRoute
   '/footer/privacy': typeof FooterPrivacyRoute
   '/footer/terms': typeof FooterTermsRoute
-  '/problems/$questionId': typeof ProblemsQuestionIdRoute
+  '/problems/$questionId': typeof ProblemsQuestionIdRouteWithChildren
   '/submissions/$submissionId': typeof SubmissionsSubmissionIdRoute
   '/user/login': typeof UserLoginRoute
   '/user/profile': typeof UserProfileRoute
@@ -192,9 +226,13 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/problems/': typeof ProblemsIndexRoute
   '/admin/questions/new': typeof AdminQuestionsNewRoute
+  '/problems/$questionId/solutions': typeof ProblemsQuestionIdSolutionsRouteWithChildren
+  '/admin/posts/': typeof AdminPostsIndexRoute
   '/admin/questions/': typeof AdminQuestionsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
   '/admin/questions/$questionId/edit': typeof AdminQuestionsQuestionIdEditRoute
+  '/problems/$questionId/solutions/$postId': typeof ProblemsQuestionIdSolutionsPostIdRoute
+  '/problems/$questionId/solutions/new': typeof ProblemsQuestionIdSolutionsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -207,7 +245,7 @@ export interface FileRoutesByTo {
   '/footer/feedback': typeof FooterFeedbackRoute
   '/footer/privacy': typeof FooterPrivacyRoute
   '/footer/terms': typeof FooterTermsRoute
-  '/problems/$questionId': typeof ProblemsQuestionIdRoute
+  '/problems/$questionId': typeof ProblemsQuestionIdRouteWithChildren
   '/submissions/$submissionId': typeof SubmissionsSubmissionIdRoute
   '/user/login': typeof UserLoginRoute
   '/user/profile': typeof UserProfileRoute
@@ -216,9 +254,13 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/problems': typeof ProblemsIndexRoute
   '/admin/questions/new': typeof AdminQuestionsNewRoute
+  '/problems/$questionId/solutions': typeof ProblemsQuestionIdSolutionsRouteWithChildren
+  '/admin/posts': typeof AdminPostsIndexRoute
   '/admin/questions': typeof AdminQuestionsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/admin/questions/$questionId/edit': typeof AdminQuestionsQuestionIdEditRoute
+  '/problems/$questionId/solutions/$postId': typeof ProblemsQuestionIdSolutionsPostIdRoute
+  '/problems/$questionId/solutions/new': typeof ProblemsQuestionIdSolutionsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -231,12 +273,13 @@ export interface FileRoutesById {
   '/contests': typeof ContestsRoute
   '/problems': typeof ProblemsRouteWithChildren
   '/rankings': typeof RankingsRoute
+  '/admin/posts': typeof AdminPostsRouteWithChildren
   '/admin/questions': typeof AdminQuestionsRouteWithChildren
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/footer/feedback': typeof FooterFeedbackRoute
   '/footer/privacy': typeof FooterPrivacyRoute
   '/footer/terms': typeof FooterTermsRoute
-  '/problems/$questionId': typeof ProblemsQuestionIdRoute
+  '/problems/$questionId': typeof ProblemsQuestionIdRouteWithChildren
   '/submissions/$submissionId': typeof SubmissionsSubmissionIdRoute
   '/user/login': typeof UserLoginRoute
   '/user/profile': typeof UserProfileRoute
@@ -245,9 +288,13 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/problems/': typeof ProblemsIndexRoute
   '/admin/questions/new': typeof AdminQuestionsNewRoute
+  '/problems/$questionId/solutions': typeof ProblemsQuestionIdSolutionsRouteWithChildren
+  '/admin/posts/': typeof AdminPostsIndexRoute
   '/admin/questions/': typeof AdminQuestionsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
   '/admin/questions/$questionId/edit': typeof AdminQuestionsQuestionIdEditRoute
+  '/problems/$questionId/solutions/$postId': typeof ProblemsQuestionIdSolutionsPostIdRoute
+  '/problems/$questionId/solutions/new': typeof ProblemsQuestionIdSolutionsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -261,6 +308,7 @@ export interface FileRouteTypes {
     | '/contests'
     | '/problems'
     | '/rankings'
+    | '/admin/posts'
     | '/admin/questions'
     | '/admin/users'
     | '/footer/feedback'
@@ -275,9 +323,13 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/problems/'
     | '/admin/questions/new'
+    | '/problems/$questionId/solutions'
+    | '/admin/posts/'
     | '/admin/questions/'
     | '/admin/users/'
     | '/admin/questions/$questionId/edit'
+    | '/problems/$questionId/solutions/$postId'
+    | '/problems/$questionId/solutions/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -299,9 +351,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/problems'
     | '/admin/questions/new'
+    | '/problems/$questionId/solutions'
+    | '/admin/posts'
     | '/admin/questions'
     | '/admin/users'
     | '/admin/questions/$questionId/edit'
+    | '/problems/$questionId/solutions/$postId'
+    | '/problems/$questionId/solutions/new'
   id:
     | '__root__'
     | '/'
@@ -313,6 +369,7 @@ export interface FileRouteTypes {
     | '/contests'
     | '/problems'
     | '/rankings'
+    | '/admin/posts'
     | '/admin/questions'
     | '/admin/users'
     | '/footer/feedback'
@@ -327,9 +384,13 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/problems/'
     | '/admin/questions/new'
+    | '/problems/$questionId/solutions'
+    | '/admin/posts/'
     | '/admin/questions/'
     | '/admin/users/'
     | '/admin/questions/$questionId/edit'
+    | '/problems/$questionId/solutions/$postId'
+    | '/problems/$questionId/solutions/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -508,6 +569,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminQuestionsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/posts': {
+      id: '/admin/posts'
+      path: '/posts'
+      fullPath: '/admin/posts'
+      preLoaderRoute: typeof AdminPostsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/users/': {
       id: '/admin/users/'
       path: '/'
@@ -522,12 +590,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminQuestionsIndexRouteImport
       parentRoute: typeof AdminQuestionsRoute
     }
+    '/admin/posts/': {
+      id: '/admin/posts/'
+      path: '/'
+      fullPath: '/admin/posts/'
+      preLoaderRoute: typeof AdminPostsIndexRouteImport
+      parentRoute: typeof AdminPostsRoute
+    }
+    '/problems/$questionId/solutions': {
+      id: '/problems/$questionId/solutions'
+      path: '/solutions'
+      fullPath: '/problems/$questionId/solutions'
+      preLoaderRoute: typeof ProblemsQuestionIdSolutionsRouteImport
+      parentRoute: typeof ProblemsQuestionIdRoute
+    }
     '/admin/questions/new': {
       id: '/admin/questions/new'
       path: '/new'
       fullPath: '/admin/questions/new'
       preLoaderRoute: typeof AdminQuestionsNewRouteImport
       parentRoute: typeof AdminQuestionsRoute
+    }
+    '/problems/$questionId/solutions/new': {
+      id: '/problems/$questionId/solutions/new'
+      path: '/new'
+      fullPath: '/problems/$questionId/solutions/new'
+      preLoaderRoute: typeof ProblemsQuestionIdSolutionsNewRouteImport
+      parentRoute: typeof ProblemsQuestionIdSolutionsRoute
+    }
+    '/problems/$questionId/solutions/$postId': {
+      id: '/problems/$questionId/solutions/$postId'
+      path: '/$postId'
+      fullPath: '/problems/$questionId/solutions/$postId'
+      preLoaderRoute: typeof ProblemsQuestionIdSolutionsPostIdRouteImport
+      parentRoute: typeof ProblemsQuestionIdSolutionsRoute
     }
     '/admin/questions/$questionId/edit': {
       id: '/admin/questions/$questionId/edit'
@@ -538,6 +634,18 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminPostsRouteChildren {
+  AdminPostsIndexRoute: typeof AdminPostsIndexRoute
+}
+
+const AdminPostsRouteChildren: AdminPostsRouteChildren = {
+  AdminPostsIndexRoute: AdminPostsIndexRoute,
+}
+
+const AdminPostsRouteWithChildren = AdminPostsRoute._addFileChildren(
+  AdminPostsRouteChildren,
+)
 
 interface AdminQuestionsRouteChildren {
   AdminQuestionsNewRoute: typeof AdminQuestionsNewRoute
@@ -568,12 +676,14 @@ const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminPostsRoute: typeof AdminPostsRouteWithChildren
   AdminQuestionsRoute: typeof AdminQuestionsRouteWithChildren
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminPostsRoute: AdminPostsRouteWithChildren,
   AdminQuestionsRoute: AdminQuestionsRouteWithChildren,
   AdminUsersRoute: AdminUsersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
@@ -581,13 +691,42 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface ProblemsQuestionIdSolutionsRouteChildren {
+  ProblemsQuestionIdSolutionsPostIdRoute: typeof ProblemsQuestionIdSolutionsPostIdRoute
+  ProblemsQuestionIdSolutionsNewRoute: typeof ProblemsQuestionIdSolutionsNewRoute
+}
+
+const ProblemsQuestionIdSolutionsRouteChildren: ProblemsQuestionIdSolutionsRouteChildren =
+  {
+    ProblemsQuestionIdSolutionsPostIdRoute:
+      ProblemsQuestionIdSolutionsPostIdRoute,
+    ProblemsQuestionIdSolutionsNewRoute: ProblemsQuestionIdSolutionsNewRoute,
+  }
+
+const ProblemsQuestionIdSolutionsRouteWithChildren =
+  ProblemsQuestionIdSolutionsRoute._addFileChildren(
+    ProblemsQuestionIdSolutionsRouteChildren,
+  )
+
+interface ProblemsQuestionIdRouteChildren {
+  ProblemsQuestionIdSolutionsRoute: typeof ProblemsQuestionIdSolutionsRouteWithChildren
+}
+
+const ProblemsQuestionIdRouteChildren: ProblemsQuestionIdRouteChildren = {
+  ProblemsQuestionIdSolutionsRoute:
+    ProblemsQuestionIdSolutionsRouteWithChildren,
+}
+
+const ProblemsQuestionIdRouteWithChildren =
+  ProblemsQuestionIdRoute._addFileChildren(ProblemsQuestionIdRouteChildren)
+
 interface ProblemsRouteChildren {
-  ProblemsQuestionIdRoute: typeof ProblemsQuestionIdRoute
+  ProblemsQuestionIdRoute: typeof ProblemsQuestionIdRouteWithChildren
   ProblemsIndexRoute: typeof ProblemsIndexRoute
 }
 
 const ProblemsRouteChildren: ProblemsRouteChildren = {
-  ProblemsQuestionIdRoute: ProblemsQuestionIdRoute,
+  ProblemsQuestionIdRoute: ProblemsQuestionIdRouteWithChildren,
   ProblemsIndexRoute: ProblemsIndexRoute,
 }
 

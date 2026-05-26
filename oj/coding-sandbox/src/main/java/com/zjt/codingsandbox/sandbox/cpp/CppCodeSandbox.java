@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class CppCodeSandbox extends CppCodeSandboxTemplate {
 
     @Override
-    public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
-        return super.executeCode(executeCodeRequest);
+    public ExecuteCodeResponse execute(ExecuteCodeRequest executeCodeRequest) {
+        return super.execute(executeCodeRequest);
     }
 }

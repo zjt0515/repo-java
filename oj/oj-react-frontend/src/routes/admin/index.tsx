@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { FileQuestion, Users } from 'lucide-react'
+import { FileQuestion, FileText, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute('/admin/')({
@@ -39,6 +39,19 @@ function RouteComponent() {
             </p>
             <Button asChild className="mt-4 w-fit">
               <Link to="/admin/users">进入用户管理</Link>
+            </Button>
+          </div>
+
+          <div className="flex flex-col rounded-lg border bg-background p-5">
+            <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <FileText className="size-5" />
+            </div>
+            <h2 className="mt-4 text-lg font-medium">帖子管理</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              管理题解、讨论帖和关联题目的内容信息
+            </p>
+            <Button asChild className="mt-4 w-fit">
+              <Link to="/admin/posts">进入帖子管理</Link>
             </Button>
           </div>
         </div>

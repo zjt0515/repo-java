@@ -52,12 +52,14 @@ public class JavaCodeSandboxDocker extends JavaCodeSandboxTemplate {
             pool.copyToWorkspace(container, codeFile.getParentFile());
 
             List<ExecuteMessage> executeMessageList = new ArrayList<>();
-            String[] cmdArray = {"java", "-Xmx256m", "-Dfile.encoding=UTF-8", "-cp", DockerContainerPool.CONTAINER_WORK_DIR, "Main"};
-            for (String inputArgs : inputList) {
+            for (int i = 0; i < inputList.size(); i++) {
+                String[] cmdArray = {"sh", "-c", "java -Xmx256m -Dfile.encoding=UTF-8 -cp "
+                        + DockerContainerPool.CONTAINER_WORK_DIR + " Main < "
+                        + DockerContainerPool.CONTAINER_WORK_DIR + "/" + i + ".txt"};
                 ExecuteMessage executeMessage = commandExecutor.execute(
                         container.getContainerId(),
                         cmdArray,
-                        buildStdin(inputArgs),
+                        null,
                         TIME_OUT
                 );
                 executeMessageList.add(executeMessage);
@@ -70,6 +72,8 @@ public class JavaCodeSandboxDocker extends JavaCodeSandboxTemplate {
         } catch (RuntimeException e) {
             reusable = false;
             throw e;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } finally {
             if (container != null) {
                 if (reusable) {
@@ -105,18 +109,6 @@ public class JavaCodeSandboxDocker extends JavaCodeSandboxTemplate {
             dockerClientManager = new DockerClientManager();
         }
         return dockerClientManager;
-    }
-
-    private String buildStdin(String inputArgs) {
-        if (inputArgs == null) {
-            return "";
-        }
-        String[] inputArgsArray = inputArgs.split(" ");
-        StringBuilder stdinBuilder = new StringBuilder();
-        for (String inputArg : inputArgsArray) {
-            stdinBuilder.append(inputArg).append('\n');
-        }
-        return stdinBuilder.toString();
     }
 
     @PreDestroy

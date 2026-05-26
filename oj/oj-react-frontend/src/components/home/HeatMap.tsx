@@ -105,8 +105,8 @@ function HeatMap() {
   const message = getFeedbackMessage(state.status, summary.total, state.error)
 
   return (
-    <section className="home-submit-heatmap rounded-xl border bg-background shadow-sm">
-      <div className="flex items-center justify-between gap-3 border-b px-4 py-3">
+    <section className="home-submit-heatmap w-full max-w-md justify-self-center rounded-xl border bg-background shadow-sm lg:justify-self-end">
+      <div className="flex items-center justify-between gap-3 border-b px-3 py-2.5">
         <div className="flex min-w-0 items-center gap-2">
           <CalendarDays className="size-4 shrink-0 text-primary" />
           <div className="min-w-0">
@@ -132,7 +132,7 @@ function HeatMap() {
         </Button>
       </div>
 
-      <div className="space-y-4 p-4">
+      <div className="space-y-3 p-3">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-sm font-medium">
@@ -161,11 +161,11 @@ function HeatMap() {
           <SummaryItem label="连续" value={`${summary.currentStreak} 天`} />
         </div>
 
-        <div className="overflow-hidden rounded-lg border bg-muted/10 px-3 py-3">
+        <div className="overflow-hidden rounded-lg border bg-muted/10 px-2.5 py-2">
           <CalendarHeatmap<HeatMapValue>
             classForValue={getClassForValue}
             endDate={range.end}
-            gutterSize={3}
+            gutterSize={1}
             monthLabels={MONTH_LABELS}
             showMonthLabels
             showOutOfRangeDays={false}
@@ -377,7 +377,7 @@ function getFeedbackMessage(status: LoadStatus, total: number, error?: string) {
     return error || '提交记录暂时不可用'
   }
 
-  return total > 0 ? '颜色越深代表当天提交越密集' : '近 3 个月暂无提交记录'
+  return total > 0 ? '' : '近 3 个月暂无提交记录'
 }
 
 function getLevel(count: number) {

@@ -2,13 +2,14 @@ package com.zjt.codingsandbox.controller;
 
 
 import cn.hutool.core.util.StrUtil;
+import com.zjt.codingsandbox.sandbox.cpp.CppCodeSandboxDocker;
 import com.zjt.codingsandbox.sandbox.java.*;
 import com.zjt.codingsandbox.model.ExecuteCodeRequest;
 import com.zjt.codingsandbox.model.ExecuteCodeResponse;
 import com.zjt.codingsandbox.sandbox.node.NodeCodeSandbox;
 import com.zjt.codingsandbox.sandbox.node.NodeCodeSandboxDocker;
-import com.zjt.codingsandbox.sandbox.node.NodeCodeSandboxTemplate;
 import com.zjt.codingsandbox.utils.ResponseUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
+@Slf4j
 @RestController("/")
 public class MainController {
 
@@ -43,6 +45,8 @@ public class MainController {
     public static final String AUTH_HEADER = "auth";
 
     public static final String AUTH_HEADER_SECRET = "ExampleSecretKey";
+    @Autowired
+    private CppCodeSandboxDocker cppCodeSandboxDoceker;
 
 
     @PostMapping("/executeCode")
@@ -66,16 +70,20 @@ public class MainController {
             return ResponseUtils.getErrExecuteCodeResponse(new RuntimeException("请求参数错误，代码或输入用例或语言不能为空"));
         }
 
+        ExecuteCodeResponse executeCodeResponse = null;
         // 选择代码沙箱，并执行
         if ("java".equals(language)) {
             //return nativeCodeSandbox.executeCode(executeCodeRequest);
-            return javaCodeSandboxDocker.executeCode(executeCodeRequest);
+            return javaCodeSandboxDocker.execute(executeCodeRequest);
             //return javaCodeSandbox.executeCode(executeCodeRequest);
             //return  dockerCodeSandbox.executeCode(executeCodeRequest);
         } else if ("javascript".equals(language) || "js".equals(language)) {
             //return nodeCodeSandbox.executeCode(executeCodeRequest);
-            return nodeCodeSandboxDocker.executeCode(executeCodeRequest);
+            executeCodeResponse = nodeCodeSandboxDocker.execute(executeCodeRequest);
+        } else if ("cpp".equals(language) || "c++".equals(language)) {
+            executeCodeResponse = cppCodeSandboxDoceker.execute(executeCodeRequest);
         }
-        return null;
+        log.info(executeCodeResponse.toString());
+        return executeCodeResponse;
     }
 }

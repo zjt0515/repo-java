@@ -1,12 +1,20 @@
-import { Link, Outlet, useLocation } from '@tanstack/react-router'
-import { FileQuestion, LayoutDashboard, Users, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { useState } from 'react'
-import { cn } from '@/lib/utils'
+import { Link, Outlet, useLocation } from '@tanstack/react-router'
+import {
+  ChevronsLeft,
+  ChevronsRight,
+  FileQuestion,
+  FileText,
+  LayoutDashboard,
+  Users,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 const sidebarItems = [
   { label: '管理概览', to: '/admin', icon: LayoutDashboard },
   { label: '题目管理', to: '/admin/questions', icon: FileQuestion },
+  { label: '帖子管理', to: '/admin/posts', icon: FileText },
   { label: '用户管理', to: '/admin/users', icon: Users },
 ]
 

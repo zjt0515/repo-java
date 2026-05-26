@@ -52,7 +52,7 @@ public class ProcessUtils {
                 }
                 executeMessage.setMessage(StringUtils.join(outputStrList, "\n"));
             }else {
-                System.out.println(cmdName + " error!: " + exitValue);
+                System.out.println(cmdName + " error!");
                 // 获取输出流
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 

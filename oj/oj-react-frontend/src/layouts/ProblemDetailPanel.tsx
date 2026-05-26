@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { BookOpen, ChevronRight, FileText, Loader2 } from 'lucide-react'
 import { MarkdownViewer } from '@/components/markdown'
 import { Badge } from '@/components/ui/badge'
@@ -44,6 +45,7 @@ function ProblemDetailPanel({
   loading = false,
   onToggleSidebar,
   question,
+  questionId,
   showSidebarToggle = false,
 }: ProblemDetailPanelProps) {
   const displayQuestion = question ?? fallbackQuestion
@@ -52,7 +54,7 @@ function ProblemDetailPanel({
 
   return (
     <section className="border-r">
-      <div className="flex h-12 items-center justify-between border-b px-4">
+      <div className="flex h-12 items-center justify-between gap-2 border-b px-4">
         <div className="flex items-center gap-2">
           {showSidebarToggle && (
             <Button
@@ -69,6 +71,17 @@ function ProblemDetailPanel({
             <span>题目详情</span>
           </div>
         </div>
+        {questionId ? (
+          <Button asChild size="sm" variant="ghost">
+            <Link
+              params={{ questionId }}
+              to="/problems/$questionId/solutions"
+            >
+              <FileText />
+              题解
+            </Link>
+          </Button>
+        ) : null}
       </div>
       <div className="space-y-5 p-4 sm:p-5">
         {loading ? (

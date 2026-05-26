@@ -16,6 +16,7 @@
         <module>oj-question-service</module>
         <module>oj-user-service</module>
         <module>oj-service-client</module>
+        <module>oj-post-service</module>
     </modules>
     <properties>
         <java.version>1.8</java.version>

@@ -70,6 +70,8 @@ public class NodeCodeSandboxDocker extends NodeCodeSandboxTemplate {
         } catch (RuntimeException e) {
             reusable = false;
             throw e;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } finally {
             if (container != null) {
                 if (reusable) {

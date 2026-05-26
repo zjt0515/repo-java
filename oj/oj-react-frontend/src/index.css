@@ -143,13 +143,13 @@
 @layer components {
   .home-submit-heatmap .react-calendar-heatmap {
     display: block;
-    min-height: 7.75rem;
+    min-height: 6.25rem;
     width: 100%;
   }
 
   .home-submit-heatmap .react-calendar-heatmap text {
     fill: var(--muted-foreground);
-    font-size: 0.625rem;
+    font-size: 0.5625rem;
   }
 
   .home-submit-heatmap .react-calendar-heatmap rect {

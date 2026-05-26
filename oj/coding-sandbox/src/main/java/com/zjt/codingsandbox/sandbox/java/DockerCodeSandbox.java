@@ -1,9 +1,7 @@
 package com.zjt.codingsandbox.sandbox.java;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.dfa.WordTree;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
@@ -14,9 +12,6 @@ import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.zjt.codingsandbox.model.ExecuteCodeRequest;
 import com.zjt.codingsandbox.model.ExecuteCodeResponse;
 import com.zjt.codingsandbox.model.ExecuteMessage;
-import com.zjt.codingsandbox.model.JudgeInfo;
-import com.zjt.codingsandbox.sandbox.CodeSandbox;
-import com.zjt.codingsandbox.utils.ProcessUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
@@ -28,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -76,7 +70,7 @@ public class DockerCodeSandbox extends NativeCodeSandbox {
         executeCodeRequest.setLanguage("java");
         executeCodeRequest.setInputList(Arrays.asList("1 3"));
 
-        ExecuteCodeResponse executeCodeResponse = dockerCodeSandbox.executeCode(executeCodeRequest);
+        ExecuteCodeResponse executeCodeResponse = dockerCodeSandbox.execute(executeCodeRequest);
         System.out.println(executeCodeResponse);
     }
 
